@@ -6,8 +6,9 @@
     "compile": "hardhat compile",
     "test": "hardhat test",
     "deploy:alfajores": "hardhat run scripts/deploy.ts --network alfajores",
-    "deploy:mainnet": "hardhat run scripts/deploy.ts --network celo",
-    "verify": "hardhat verify",
+    "deploy:mainnet": "HARDHAT_NETWORK=celo hardhat run scripts/deploy.ts --network celo",
+    "verify:alfajores": "hardhat verify --network alfajores",
+    "verify:mainnet": "hardhat verify --network celo",
     "clean": "hardhat clean"
   },
   "devDependencies": {

@@ -4,7 +4,16 @@ import * as dotenv from 'dotenv';
 
 dotenv.config({ path: '../../.env' });
 
-const EMPLOYER_PRIVATE_KEY = process.env.EMPLOYER_PRIVATE_KEY || '0x' + '0'.repeat(64);
+// Use a dedicated mainnet deployer key if set; fall back to employer key.
+// Never fall back to a zero key on mainnet — deployment will fail with a clear error.
+const DEPLOY_KEY = process.env.DEPLOYER_PRIVATE_KEY || process.env.EMPLOYER_PRIVATE_KEY || '';
+if (!DEPLOY_KEY || DEPLOY_KEY === '0xYOUR_EMPLOYER_PRIVATE_KEY') {
+  // Only warn — don't throw so `hardhat compile` still works without a key.
+  if (process.env.HARDHAT_NETWORK === 'celo') {
+    throw new Error('Set DEPLOYER_PRIVATE_KEY (or EMPLOYER_PRIVATE_KEY) in .env before deploying to mainnet.');
+  }
+}
+const accounts = DEPLOY_KEY ? [DEPLOY_KEY] : [];
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -15,6 +24,8 @@ const config: HardhatUserConfig = {
         runs: 200,
       },
       evmVersion: 'paris',
+      // Enable the metadata hash so CeloScan can verify sources
+      metadata: { bytecodeHash: 'ipfs' },
     },
   },
   networks: {
@@ -28,14 +39,20 @@ const config: HardhatUserConfig = {
     alfajores: {
       url: process.env.CELO_RPC_URL || 'https://alfajores-forno.celo-testnet.org',
       chainId: 44787,
-      accounts: [EMPLOYER_PRIVATE_KEY],
-      gasPrice: 5000000000, // 5 gwei
+      accounts,
+      // EIP-1559 — base fee on Alfajores is negligible; 5 gwei covers any spike
+      maxFeePerGas: 5_000_000_000,        // 5 gwei
+      maxPriorityFeePerGas: 1_000_000_000, // 1 gwei
     },
     celo: {
-      url: 'https://forno.celo.org',
+      url: process.env.CELO_MAINNET_RPC_URL || 'https://forno.celo.org',
       chainId: 42220,
-      accounts: [EMPLOYER_PRIVATE_KEY],
-      gasPrice: 5000000000,
+      accounts,
+      // Celo mainnet EIP-1559 — 10 gwei max fee is conservative and safe
+      maxFeePerGas: 10_000_000_000,        // 10 gwei
+      maxPriorityFeePerGas: 2_000_000_000, // 2 gwei
+      // Require more confirmations before Hardhat considers a tx mined
+      timeout: 120_000, // 2 min — mainnet blocks are ~5s
     },
   },
   etherscan: {
