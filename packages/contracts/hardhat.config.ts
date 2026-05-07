@@ -23,7 +23,7 @@ const config: HardhatUserConfig = {
         enabled: true,
         runs: 200,
       },
-      evmVersion: 'paris',
+      evmVersion: 'cancun',
       // Enable the metadata hash so CeloScan can verify sources
       metadata: { bytecodeHash: 'ipfs' },
     },
