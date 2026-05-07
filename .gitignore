@@ -1,0 +1,70 @@
+# ─── Environment & secrets ───────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+
+# ─── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+.yarn/
+
+# ─── Build outputs ────────────────────────────────────────────────────────────
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# ─── TypeScript ───────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Hardhat / contracts ──────────────────────────────────────────────────────
+packages/contracts/artifacts/
+packages/contracts/cache/
+packages/contracts/typechain-types/
+# Deployment outputs contain no secrets but can be noisy; keep them
+# packages/contracts/deployments/  ← keep for reference
+
+# ─── Simulation data ─────────────────────────────────────────────────────────
+# NEVER commit generated wallets
+packages/simulation/data/
+packages/simulation/dist/
+
+# ─── Database ─────────────────────────────────────────────────────────────────
+*.sqlite
+*.sqlite3
+*.db
+
+# ─── Logs ─────────────────────────────────────────────────────────────────────
+logs/
+*.log
+
+# ─── Coverage & testing ───────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ─── OS / editors ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+.vscode/launch.json
+*.swp
+*.swo
+
+# ─── Prisma ───────────────────────────────────────────────────────────────────
+packages/backend/prisma/dev.db
+packages/backend/prisma/dev.db-journal
