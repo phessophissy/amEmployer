@@ -1,0 +1,25 @@
+{
+  "name": "@am-employer/simulation",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "stress": "ts-node src/stressTest.ts",
+    "generate": "ts-node src/walletGenerator.ts"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "ethers": "^6.13.0",
+    "dotenv": "^16.4.5",
+    "socket.io-client": "^4.8.0",
+    "winston": "^3.15.0",
+    "p-limit": "^6.1.0",
+    "cli-progress": "^3.12.0",
+    "chalk": "^5.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}
