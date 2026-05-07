@@ -259,7 +259,9 @@ The stress test runner:
 
 | Contract | Address |
 |----------|---------|
-| cUSD | `0x765DE816845861e75A25fCA122bb6898B8B1282a` |
+| TaskManager | [`0xA532809154b1f8A18c09aaf5E59B0e8de6049E0b`](https://celoscan.io/address/0xA532809154b1f8A18c09aaf5E59B0e8de6049E0b) |
+| WorkerRegistry | [`0x7b08eb88a15911BcF00b22011def1E02d7F7640b`](https://celoscan.io/address/0x7b08eb88a15911BcF00b22011def1E02d7F7640b) |
+| cUSD | [`0x765DE816845861e75A25fCA122bb6898B8B1282a`](https://celoscan.io/address/0x765DE816845861e75A25fCA122bb6898B8B1282a) |
 
 ---
 
