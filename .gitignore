@@ -70,3 +70,4 @@ Thumbs.db
 # ─── Prisma ───────────────────────────────────────────────────────────────────
 packages/backend/prisma/dev.db
 packages/backend/prisma/dev.db-journal
+.vercel

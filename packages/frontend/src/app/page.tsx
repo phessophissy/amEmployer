@@ -11,7 +11,7 @@ const stats = [
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+    <div className="relative min-h-[calc(100vh-3.5rem)] flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden">
       {/* Background glow orbs */}
       <div className="pointer-events-none absolute top-1/4 -left-32 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
       <div className="pointer-events-none absolute bottom-1/4 -right-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl" />
@@ -23,16 +23,16 @@ export default function HomePage() {
         className="text-center max-w-4xl mx-auto"
       >
         {/* Title */}
-        <h1 className="text-7xl font-bold tracking-tight mb-4">
+        <h1 className="text-5xl sm:text-7xl font-bold tracking-tight mb-4">
           <span className="text-white">am</span>
           <span className="text-emerald-400 text-glow-green">Employer</span>
         </h1>
 
-        <p className="text-xl text-slate-400 mb-4 font-mono">
+        <p className="text-base sm:text-xl text-slate-400 mb-4 font-mono">
           &gt; Autonomous Digital Labor Economy on Celo
         </p>
 
-        <p className="text-slate-500 max-w-2xl mx-auto mb-12 leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto mb-8 sm:mb-12 leading-relaxed px-2">
           An AI employer agent that creates jobs, decomposes them into microtasks,
           assigns workers, validates results with AI, and distributes{' '}
           <span className="text-emerald-400">cUSD payroll</span> automatically on-chain.
