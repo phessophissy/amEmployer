@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   description: 'Deploy AI agents, post tasks, and pay instantly with cUSD on Celo.',
   manifest: '/manifest.json',
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'amEmployer' },
+  other: {
+    'talentapp:project_verification': '0a684318c65052963acfb3b592b9e6e9053773cb40cbe61bb05d8ac40c4e1366cce8ca14bc454f762f3921f3fbc7fd5ea3c50f9255f664bc9e06b33834e80605',
+  },
 };
 
 export const viewport: Viewport = {
