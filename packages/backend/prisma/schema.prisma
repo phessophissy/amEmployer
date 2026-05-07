@@ -1,0 +1,191 @@
+// This is your Prisma schema file
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum JobStatus {
+  PENDING
+  DECOMPOSING
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+enum TaskStatus {
+  OPEN
+  ASSIGNED
+  SUBMITTED
+  VERIFIED
+  REJECTED
+  PAID
+}
+
+enum WorkerType {
+  HUMAN
+  SCRIPTED
+  AI_AGENT
+}
+
+enum PaymentStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+enum AILogType {
+  JOB_DECOMPOSITION
+  TASK_ASSIGNMENT
+  VALIDATION
+  PAYMENT_TRIGGER
+  WORKER_REGISTRATION
+  ERROR
+  SYSTEM
+}
+
+enum SimStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  PAUSED
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model Job {
+  id              String    @id @default(cuid())
+  title           String
+  description     String    @db.Text
+  status          JobStatus @default(PENDING)
+  employerAddress String
+  totalBudget     Decimal   @db.Decimal(36, 18)
+  taskCount       Int       @default(0)
+  completedCount  Int       @default(0)
+  failedCount     Int       @default(0)
+  aiSummary       String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  tasks  Task[]
+  aiLogs AILog[]
+}
+
+model Task {
+  id              String     @id @default(cuid())
+  jobId           String
+  onchainTaskId   Int?       // Blockchain task ID
+  title           String
+  description     String     @db.Text
+  reward          Decimal    @db.Decimal(36, 18)
+  status          TaskStatus @default(OPEN)
+  assignedWorker  String?    // Worker wallet address
+  deadline        DateTime?
+  metadataHash    String?
+  submission      String?    @db.Text
+  validationScore Float?
+  validationNotes String?    @db.Text
+  attempts        Int        @default(0)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  job      Job       @relation(fields: [jobId], references: [id])
+  payments Payment[]
+
+  @@index([jobId])
+  @@index([status])
+  @@index([assignedWorker])
+}
+
+model Worker {
+  id            String     @id @default(cuid())
+  walletAddress String     @unique
+  reputation    Int        @default(50)
+  completedTasks Int       @default(0)
+  failedTasks   Int        @default(0)
+  totalEarnings Decimal    @db.Decimal(36, 18) @default(0)
+  isActive      Boolean    @default(true)
+  workerType    WorkerType @default(HUMAN)
+  personaName   String?
+  lastSeenAt    DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  payments Payment[]
+
+  @@index([reputation])
+  @@index([workerType])
+}
+
+model Payment {
+  id       String        @id @default(cuid())
+  taskId   String
+  workerId String
+  amount   Decimal       @db.Decimal(36, 18)
+  txHash   String?
+  status   PaymentStatus @default(PENDING)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  task   Task   @relation(fields: [taskId], references: [id])
+  worker Worker @relation(fields: [workerId], references: [id])
+
+  @@index([taskId])
+  @@index([workerId])
+  @@index([status])
+}
+
+model AILog {
+  id        String    @id @default(cuid())
+  jobId     String?
+  type      AILogType
+  message   String    @db.Text
+  metadata  Json?
+  createdAt DateTime  @default(now())
+
+  job Job? @relation(fields: [jobId], references: [id])
+
+  @@index([jobId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model SimulationRun {
+  id             String    @id @default(cuid())
+  name           String
+  walletCount    Int
+  tasksCreated   Int       @default(0)
+  tasksCompleted Int       @default(0)
+  tasksFailed    Int       @default(0)
+  totalPaid      Decimal   @db.Decimal(36, 18) @default(0)
+  avgCompletionMs Int?
+  tps            Float?
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  status         SimStatus @default(RUNNING)
+
+  wallets SimulationWallet[]
+}
+
+model SimulationWallet {
+  id             String   @id @default(cuid())
+  simulationId   String
+  walletAddress  String
+  encryptedKey   String   // AES-encrypted private key
+  tasksCompleted Int      @default(0)
+  earnings       Decimal  @db.Decimal(36, 18) @default(0)
+  status         String   @default("idle")
+  lastTaskAt     DateTime?
+  createdAt      DateTime @default(now())
+
+  simulation SimulationRun @relation(fields: [simulationId], references: [id])
+
+  @@index([simulationId])
+  @@index([walletAddress])
+}
