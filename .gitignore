@@ -35,6 +35,8 @@ out/
 packages/contracts/artifacts/
 packages/contracts/cache/
 packages/contracts/typechain-types/
+# Flattened sources are generated on-demand; no need to track
+packages/contracts/*_flat.sol
 # Deployment outputs contain no secrets but can be noisy; keep them
 # packages/contracts/deployments/  ← keep for reference
 

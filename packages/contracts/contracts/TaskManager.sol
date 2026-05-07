@@ -410,7 +410,7 @@ contract TaskManager is ReentrancyGuard, Ownable {
         uint256 start = taskCounter > 500 ? taskCounter - 500 : 1;
         for (uint256 i = start; i <= taskCounter; ) {
             if (tasks[i].status == TaskStatus.OPEN) {
-                unchecked { count++; }
+                count++;
             }
             unchecked { i++; }
         }

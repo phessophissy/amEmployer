@@ -6,9 +6,10 @@ dotenv.config({ path: '../../.env' });
 
 // Use a dedicated mainnet deployer key if set; fall back to employer key.
 // Never fall back to a zero key on mainnet — deployment will fail with a clear error.
-const DEPLOY_KEY = process.env.DEPLOYER_PRIVATE_KEY || process.env.EMPLOYER_PRIVATE_KEY || '';
-if (!DEPLOY_KEY || DEPLOY_KEY === '0xYOUR_EMPLOYER_PRIVATE_KEY') {
-  // Only warn — don't throw so `hardhat compile` still works without a key.
+const rawKey = process.env.DEPLOYER_PRIVATE_KEY || process.env.EMPLOYER_PRIVATE_KEY || '';
+// Accept only keys that look like a real 32-byte hex private key
+const DEPLOY_KEY = /^(0x)?[0-9a-fA-F]{64}$/.test(rawKey) ? rawKey : '';
+if (!DEPLOY_KEY) {
   if (process.env.HARDHAT_NETWORK === 'celo') {
     throw new Error('Set DEPLOYER_PRIVATE_KEY (or EMPLOYER_PRIVATE_KEY) in .env before deploying to mainnet.');
   }
