@@ -22,12 +22,6 @@ export default function HomePage() {
         transition={{ duration: 0.8 }}
         className="text-center max-w-4xl mx-auto"
       >
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 mb-8">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-sm font-mono text-emerald-400">Celo AI Agent Hackathon 2026</span>
-        </div>
-
         {/* Title */}
         <h1 className="text-7xl font-bold tracking-tight mb-4">
           <span className="text-white">am</span>
