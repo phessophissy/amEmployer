@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { ToastContainer } from "@/components/ui/Toast";
 import { Navbar } from '@/components/common/Navbar';
 import { WalletProvider } from '@/components/common/WalletProvider';
 import { MobileNav } from '@/components/common/MobileNav';
