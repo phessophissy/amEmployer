@@ -119,3 +119,26 @@ body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* CSS custom properties for theming */
+:root {
+  --color-primary: #10b981;
+  --color-secondary: #06b6d4;
+}
+
+[data-theme="matrix"] {
+  --color-primary: #00ff41;
+  --color-secondary: #00cc33;
+}
+[data-theme="ocean"] {
+  --color-primary: #3b82f6;
+  --color-secondary: #06b6d4;
+}
+[data-theme="sunset"] {
+  --color-primary: #f97316;
+  --color-secondary: #ec4899;
+}
+
+.themed-border { border-color: var(--color-primary); }
+.themed-text { color: var(--color-primary); }
+.themed-bg { background-color: color-mix(in srgb, var(--color-primary) 10%, transparent); }
