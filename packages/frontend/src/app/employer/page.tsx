@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { CUSDBalanceWidget } from "@/components/common/CUSDBalanceWidget";
 import { MetricsCard } from '@/components/common/MetricsCard';
 import { AIActivityLog } from '@/components/common/AIActivityLog';
 import { cn, STATUS_COLORS, shortenAddress, timeAgo } from '@/lib/utils';
