@@ -53,3 +53,4 @@ export function PaymentReceipt({ open, amount, workerAddress, taskTitle, txHash,
 // payment module v5
 // payment module v6
 // payment module v7
+// payment module v8
