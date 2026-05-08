@@ -70,3 +70,10 @@ export async function getConnectedAddress(): Promise<`0x${string}` | null> {
     return null;
   }
 }
+
+/** Open MiniPay deposit page if balance is insufficient. */
+export function promptDeposit() {
+  if (typeof window !== 'undefined') {
+    window.open(MINIPAY_DEPOSIT_LINK, '_blank');
+  }
+}
