@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { ThemeSwitcher } from "./ThemeSwitcher";
 import { useWalletContext } from './WalletProvider';
 
 const navLinks = [
