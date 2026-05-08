@@ -21,3 +21,4 @@ export function ReputationBadge({ score, showLabel, size = 'md' }: ReputationBad
 // reputation system iteration 5
 // reputation system iteration 6
 // reputation system iteration 7
+// reputation system iteration 8
