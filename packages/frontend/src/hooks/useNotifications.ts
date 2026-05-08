@@ -21,3 +21,4 @@ export const useNotifications = create<NotifStore>((set, get) => ({
   clear: () => set({ notifications: [], unreadCount: 0 }),
 }));
 // notification util 6
+// notification util 7
