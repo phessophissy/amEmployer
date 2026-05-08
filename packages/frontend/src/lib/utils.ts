@@ -49,3 +49,11 @@ export const STATUS_COLORS: Record<string, string> = {
 export function truncate(str: string, maxLen = 50): string {
   return str.length > maxLen ? str.slice(0, maxLen) + '…' : str;
 }
+
+/** Generate a random emerald-toned hex color for avatars */
+export function deterministicColor(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) { hash = seed.charCodeAt(i) + ((hash << 5) - hash); }
+  const hue = Math.abs(hash % 60) + 120; // green range
+  return `hsl(${hue}, 70%, 55%)`;
+}
