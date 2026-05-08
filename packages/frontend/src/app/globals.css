@@ -119,3 +119,11 @@ body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* MiniPay safe bottom spacing */
+.minipay-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.minipay-banner-offset {
+  padding-bottom: 3.5rem;
+}
