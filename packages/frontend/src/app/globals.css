@@ -119,3 +119,10 @@ body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Performance: contain layout reflow */
+.contain-layout { contain: layout; }
+.contain-paint { contain: paint; }
+
+/* Optimise long lists */
+.virtual-list { will-change: transform; }
