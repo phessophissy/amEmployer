@@ -44,3 +44,22 @@ export const STATUS_COLORS: Record<string, string> = {
   COMPLETED: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
   FAILED: 'text-red-400 bg-red-500/10 border-red-500/20',
 };
+
+/** Format a cUSD value with 2 decimal places and suffix */
+export function formatCUSDShort(value: string | number): string {
+  const num = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(num)) return '0.00 cUSD';
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}k cUSD`;
+  return `${num.toFixed(2)} cUSD`;
+}
+
+/** Returns relative time string */
+export function relativeTime(date: string | Date): string {
+  const diff = Date.now() - new Date(date).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+}
