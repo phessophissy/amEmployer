@@ -119,3 +119,6 @@ body {
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
+
+/* Onboarding dots animation */
+.onboarding-dot { transition: width 0.3s ease; }
