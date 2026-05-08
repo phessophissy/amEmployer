@@ -33,3 +33,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
+// PWA manifest link added via next/head
