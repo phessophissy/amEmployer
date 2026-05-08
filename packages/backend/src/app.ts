@@ -13,8 +13,26 @@ const app = express();
 
 // ─── Security middleware ───────────────────────────────────────────────────────
 app.use(helmet());
+
+const ALLOWED_ORIGINS: (string | RegExp)[] = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  // Vercel deployments — exact URL and preview branches
+  /^https:\/\/amemployer(-[a-z0-9-]+)?\.vercel\.app$/,
+];
+if (process.env.FRONTEND_URL) {
+  ALLOWED_ORIGINS.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, Postman, server-to-server)
+    if (!origin) return callback(null, true);
+    const allowed = ALLOWED_ORIGINS.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    callback(allowed ? null : new Error(`CORS: origin not allowed — ${origin}`), allowed);
+  },
   credentials: true,
 }));
 
