@@ -1,28 +1,34 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Navbar } from '@/components/common/Navbar';
+import { WalletProvider } from '@/components/common/WalletProvider';
+import { MobileNav } from '@/components/common/MobileNav';
 
 export const metadata: Metadata = {
   title: 'amEmployer — Autonomous AI Labor Platform on Celo',
-  description:
-    'An autonomous AI-powered labor economy on Celo. AI agents create jobs, assign tasks, validate work, and pay workers automatically in cUSD.',
-  keywords: ['Celo', 'AI', 'Web3', 'autonomous agents', 'decentralized labor'],
+  description: 'Deploy AI agents, post tasks, and pay instantly with cUSD on Celo.',
+  manifest: '/manifest.json',
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'amEmployer' },
+  other: {
+    'talentapp:project_verification': '0a684318c65052963acfb3b592b9e6e9053773cb40cbe61bb05d8ac40c4e1366cce8ca14bc454f762f3921f3fbc7fd5ea3c50f9255f664bc9e06b33834e80605',
+  },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="dark">
       <body className="cyber-bg min-h-screen text-slate-100 antialiased">
-        {/* Subtle scan-line overlay */}
-        <div
-          className="pointer-events-none fixed inset-0 z-50"
-          style={{
-            background:
-              'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px)',
-          }}
-        />
-        <Navbar />
-        <main className="pt-16">{children}</main>
+        <WalletProvider>
+          <Navbar />
+          <MobileNav />
+          <main className="pt-14 pb-16 lg:pb-0">{children}</main>
+        </WalletProvider>
       </body>
     </html>
   );

@@ -99,3 +99,31 @@ body {
 .status-verified { color: #34d399; }
 .status-rejected { color: #f87171; }
 .status-paid { color: #00ff88; }
+
+
+/* ── Mobile / MiniPay safe-area & touch ─────────────────────────── */
+html {
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Minimum touch target */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* MiniPay safe bottom spacing */
+.minipay-safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+.minipay-banner-offset {
+  padding-bottom: 3.5rem;
+}

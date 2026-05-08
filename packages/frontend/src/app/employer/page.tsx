@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useWebSocket } from '@/hooks/useWebSocket';
+import { CUSDBalanceWidget } from "@/components/common/CUSDBalanceWidget";
 import { MetricsCard } from '@/components/common/MetricsCard';
 import { AIActivityLog } from '@/components/common/AIActivityLog';
 import { cn, STATUS_COLORS, shortenAddress, timeAgo } from '@/lib/utils';
+import { useWalletContext } from '@/components/common/WalletProvider';
 
 interface Job {
   id: string;
@@ -35,10 +37,11 @@ export default function EmployerPage() {
     title: '',
     description: '',
     totalBudget: '',
-    employerAddress: '0x0000000000000000000000000000000000000001',
+    employerAddress: '',
   });
 
   const { connected, aiLogs, taskUpdates, payments } = useWebSocket();
+  const { address: walletAddress } = useWalletContext();
 
   const load = async () => {
     try {
@@ -60,6 +63,12 @@ export default function EmployerPage() {
   useEffect(() => {
     if (taskUpdates.length) load();
   }, [taskUpdates]);
+
+  useEffect(() => {
+    if (walletAddress) {
+      setForm((prev) => ({ ...prev, employerAddress: walletAddress }));
+    }
+  }, [walletAddress]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
