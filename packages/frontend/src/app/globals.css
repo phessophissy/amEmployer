@@ -165,3 +165,6 @@ html { color-scheme: dark; }
 .glass-cyan { background: rgba(6,182,212,0.06); backdrop-filter: blur(16px); border: 1px solid rgba(6,182,212,0.15); }
 .neon-shadow-green { box-shadow: 0 0 16px rgba(16,185,129,0.25), 0 0 48px rgba(16,185,129,0.08); }
 .neon-shadow-cyan { box-shadow: 0 0 16px rgba(6,182,212,0.2), 0 0 48px rgba(6,182,212,0.06); }
+/* Mobile bottom nav safe area */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pb-nav { padding-bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px)); }
