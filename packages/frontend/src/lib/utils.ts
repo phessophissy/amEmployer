@@ -239,3 +239,16 @@ export function debounce<T extends (...args: any[]) => any>(fn: T, wait: number)
 // swipe-gestures iteration 6 - 1778273495
 // swipe-gestures iteration 7 - 1778273495
 // swipe-gestures iteration 8 - 1778273495
+
+/** Truncate a string to maxLen with ellipsis */
+export function truncate(str: string, maxLen = 50): string {
+  return str.length > maxLen ? str.slice(0, maxLen) + '…' : str;
+}
+
+/** Generate a random emerald-toned hex color for avatars */
+export function deterministicColor(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) { hash = seed.charCodeAt(i) + ((hash << 5) - hash); }
+  const hue = Math.abs(hash % 60) + 120; // green range
+  return `hsl(${hue}, 70%, 55%)`;
+}
