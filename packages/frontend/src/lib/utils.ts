@@ -333,3 +333,12 @@ export function relativeTime(date: string | Date): string {
   if (hours < 24) return `${hours}h ago`;
   return `${Math.floor(hours / 24)}d ago`;
 }
+// typewriter iteration 1 - 1778273483
+// typewriter iteration 2 - 1778273483
+// typewriter iteration 3 - 1778273483
+// typewriter iteration 4 - 1778273483
+// typewriter iteration 5 - 1778273483
+// typewriter iteration 6 - 1778273483
+// typewriter iteration 7 - 1778273483
+// typewriter iteration 8 - 1778273483
+// typewriter iteration 9 - 1778273483
