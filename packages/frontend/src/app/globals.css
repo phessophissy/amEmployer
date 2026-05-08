@@ -126,4 +126,22 @@ button, a {
 }
 .minipay-banner-offset {
   padding-bottom: 3.5rem;
+/* A11y: focus visible styles */
+:focus-visible {
+  outline: 2px solid #10b981;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .cyber-card { border-width: 2px; }
 }
