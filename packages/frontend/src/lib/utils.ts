@@ -44,3 +44,8 @@ export const STATUS_COLORS: Record<string, string> = {
   COMPLETED: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
   FAILED: 'text-red-400 bg-red-500/10 border-red-500/20',
 };
+
+/** Truncate a string to maxLen with ellipsis */
+export function truncate(str: string, maxLen = 50): string {
+  return str.length > maxLen ? str.slice(0, maxLen) + '…' : str;
+}
