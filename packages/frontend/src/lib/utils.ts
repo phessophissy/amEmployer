@@ -47,3 +47,4 @@ export const STATUS_COLORS: Record<string, string> = {
 // job-search-filter iteration 1 - 1778273465
 // job-search-filter iteration 2 - 1778273465
 // job-search-filter iteration 3 - 1778273465
+// job-search-filter iteration 4 - 1778273465
