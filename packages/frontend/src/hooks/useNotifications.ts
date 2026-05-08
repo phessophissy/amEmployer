@@ -20,3 +20,4 @@ export const useNotifications = create<NotifStore>((set, get) => ({
   markAllRead: () => set(s => ({ notifications: s.notifications.map(n => ({ ...n, read: true })), unreadCount: 0 })),
   clear: () => set({ notifications: [], unreadCount: 0 }),
 }));
+// notification util 6
