@@ -44,3 +44,17 @@ export const STATUS_COLORS: Record<string, string> = {
   COMPLETED: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/20',
   FAILED: 'text-red-400 bg-red-500/10 border-red-500/20',
 };
+
+/** Clamp a number between min and max */
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+/** Debounce a function */
+export function debounce<T extends (...args: any[]) => any>(fn: T, wait: number): T {
+  let timer: ReturnType<typeof setTimeout>;
+  return ((...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), wait);
+  }) as T;
+}
