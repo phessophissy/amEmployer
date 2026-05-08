@@ -45,3 +45,4 @@ export const STATUS_COLORS: Record<string, string> = {
   FAILED: 'text-red-400 bg-red-500/10 border-red-500/20',
 };
 // transaction-history iteration 1 - 1778273503
+// transaction-history iteration 2 - 1778273503
