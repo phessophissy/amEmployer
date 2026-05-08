@@ -145,3 +145,17 @@ button, a {
 @media (prefers-contrast: high) {
   .cyber-card { border-width: 2px; }
 }
+/* Performance: contain layout reflow */
+.contain-layout { contain: layout; }
+.contain-paint { contain: paint; }
+
+/* Optimise long lists */
+.virtual-list { will-change: transform; }
+
+/* Smooth image loading */
+img { transition: opacity 0.2s ease; }
+img[loading="lazy"] { opacity: 0; }
+img.loaded { opacity: 1; }
+
+/* Prevent FOUC on theme change */
+html { color-scheme: dark; }

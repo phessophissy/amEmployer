@@ -130,3 +130,17 @@ export const STATUS_COLORS: Record<string, string> = {
 // PR 49 iteration 8 - 1778273719
 // PR 49 iteration 9 - 1778273719
 // PR 49 iteration 10 - 1778273719
+
+/** Clamp a number between min and max */
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+/** Debounce a function */
+export function debounce<T extends (...args: any[]) => any>(fn: T, wait: number): T {
+  let timer: ReturnType<typeof setTimeout>;
+  return ((...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), wait);
+  }) as T;
+}

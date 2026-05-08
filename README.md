@@ -340,3 +340,21 @@ Key variables:
 ## License
 
 MIT © 2025 phessophissy
+
+## Frontend Features (v2)
+
+- MiniPay-native with auto wallet detection and cUSD balance display
+- Multi-step job creation stepper with budget presets
+- Mobile bottom navigation with safe-area insets
+- Pull-to-refresh with native touch gesture
+- Real-time notification center (Zustand)
+- Worker profile pages with reputation gauge
+- Treasury dashboard with payment history
+- Animated charts and sparklines
+- Glassmorphism card system
+- 4-theme system (Cyber/Matrix/Ocean/Sunset)
+- PWA manifest for installable app
+- Accessibility: skip links, focus-visible, reduced-motion
+- TypewriterText, AnimatedCounter, PaymentConfetti
+- Swipeable task cards with drag-to-complete
+- Generic sortable DataTable<T>
