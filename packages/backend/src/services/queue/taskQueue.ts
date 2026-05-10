@@ -18,11 +18,11 @@ const connection = new IORedis(redisUrl, {
 // ─── Queue names ──────────────────────────────────────────────────────────────
 
 export const QUEUE_NAMES = {
-  JOB_DECOMPOSITION: 'job:decomposition',
-  TASK_ASSIGNMENT: 'task:assignment',
-  TASK_VALIDATION: 'task:validation',
-  PAYMENT_RELEASE: 'payment:release',
-  WORKER_SIMULATION: 'worker:simulation',
+  JOB_DECOMPOSITION: 'job-decomposition',
+  TASK_ASSIGNMENT: 'task-assignment',
+  TASK_VALIDATION: 'task-validation',
+  PAYMENT_RELEASE: 'payment-release',
+  WORKER_SIMULATION: 'worker-simulation',
 } as const;
 
 // ─── Queues ───────────────────────────────────────────────────────────────────
