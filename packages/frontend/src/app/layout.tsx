@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WalletProvider>
           <Navbar />
           <MobileNav />
-          <main className="pt-14 pb-16 lg:pb-0">{children}</main>
+          <main className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>{children}</main>
         </WalletProvider>
       </body>
     </html>

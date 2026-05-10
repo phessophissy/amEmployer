@@ -18,7 +18,7 @@ export function MobileNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-emerald-500/10 bg-black/95 backdrop-blur-xl safe-area-bottom">
+    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-emerald-500/10 bg-black/95 backdrop-blur-xl" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <div className="flex items-stretch h-16">
         {navLinks.map((link) => {
           const active = pathname === link.href;
@@ -26,7 +26,7 @@ export function MobileNav() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex-1 flex flex-col items-center justify-center gap-0.5 text-center transition-all duration-150 ${
+              className={`relative flex-1 flex flex-col items-center justify-center gap-0.5 text-center transition-all duration-150 ${
                 active
                   ? 'text-emerald-400'
                   : 'text-slate-600 hover:text-slate-400'
@@ -37,7 +37,7 @@ export function MobileNav() {
                 {link.label}
               </span>
               {active && (
-                <span className="absolute bottom-1 w-4 h-0.5 bg-emerald-400 rounded-full" />
+                <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-4 h-0.5 bg-emerald-400 rounded-full" />
               )}
             </Link>
           );

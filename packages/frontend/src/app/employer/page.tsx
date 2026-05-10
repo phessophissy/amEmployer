@@ -98,14 +98,14 @@ export default function EmployerPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Employer <span className="text-emerald-400">Dashboard</span>
           </h1>
-          <p className="text-slate-500 mt-1 font-mono text-sm">
+          <p className="text-slate-500 mt-1 font-mono text-xs sm:text-sm">
             {connected ? (
               <span className="text-emerald-400">● LIVE</span>
             ) : (
@@ -115,17 +115,17 @@ export default function EmployerPage() {
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             onClick={handleDemo}
             disabled={demoLoading}
-            className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold rounded-lg transition-all duration-200 shadow-cyber-green text-sm disabled:opacity-50"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-semibold rounded-lg transition-all duration-200 text-sm disabled:opacity-50"
           >
-            {demoLoading ? '⚡ Launching...' : '⚡ Launch Autonomous Economy'}
+            {demoLoading ? '⚡ Launching...' : '⚡ Launch Economy'}
           </button>
           <button
             onClick={() => setShowCreateForm(true)}
-            className="px-5 py-2.5 border border-emerald-500/40 hover:border-emerald-400 text-emerald-400 font-semibold rounded-lg transition-all duration-200 hover:bg-emerald-500/10 text-sm"
+            className="flex-1 sm:flex-none px-4 py-2.5 border border-emerald-500/40 hover:border-emerald-400 text-emerald-400 font-semibold rounded-lg transition-all duration-200 hover:bg-emerald-500/10 text-sm"
           >
             + Create Job
           </button>
@@ -133,15 +133,15 @@ export default function EmployerPage() {
       </div>
 
       {/* Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
         <MetricsCard title="Total Jobs" value={stats?.jobs.total ?? '—'} subtitle={`${stats?.jobs.active ?? 0} active`} color="green" />
         <MetricsCard title="Tasks" value={stats?.tasks.total ?? '—'} subtitle={`${stats?.tasks.open ?? 0} open · ${stats?.tasks.assigned ?? 0} assigned`} color="cyan" />
         <MetricsCard title="Workers" value={stats?.workers.total ?? '—'} subtitle={`${stats?.workers.active ?? 0} active`} color="purple" />
         <MetricsCard title="Paid Out" value={`${parseFloat(stats?.payments.totalAmount || '0').toFixed(2)} cUSD`} subtitle="total distributed" color="orange" />
       </div>
 
-      {/* Task pipeline */}
-      <div className="grid grid-cols-5 gap-3 mb-8">
+      {/* Task pipeline — horizontal scroll on mobile */}
+      <div className="flex gap-2 sm:gap-3 mb-6 overflow-x-auto pb-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-5">
         {[
           { label: 'Open', count: stats?.tasks.open, color: 'blue' },
           { label: 'Assigned', count: stats?.tasks.assigned, color: 'yellow' },
@@ -151,17 +151,17 @@ export default function EmployerPage() {
         ].map((stage) => (
           <div
             key={stage.label}
-            className="bg-slate-900/50 border border-slate-700/50 rounded-lg p-3 text-center"
+            className="flex-shrink-0 w-[calc(20vw-10px)] sm:w-auto min-w-[72px] bg-slate-900/50 border border-slate-700/50 rounded-lg p-3 text-center"
           >
-            <div className={`text-2xl font-bold font-mono text-${stage.color}-400`}>
+            <div className={`text-xl sm:text-2xl font-bold font-mono text-${stage.color}-400`}>
               {stage.count ?? 0}
             </div>
-            <div className="text-xs text-slate-500 mt-1">{stage.label}</div>
+            <div className="text-[10px] sm:text-xs text-slate-500 mt-1">{stage.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Jobs list */}
         <div className="lg:col-span-2">
           <div className="bg-slate-900/50 border border-slate-700/30 rounded-xl overflow-hidden">
@@ -228,7 +228,7 @@ export default function EmployerPage() {
         </div>
 
         {/* AI Log sidebar */}
-        <div className="bg-slate-900/50 border border-emerald-500/10 rounded-xl overflow-hidden h-[500px]">
+        <div className="bg-slate-900/50 border border-emerald-500/10 rounded-xl overflow-hidden h-64 sm:h-[500px]">
           <AIActivityLog logs={aiLogs} maxHeight="460px" />
         </div>
       </div>
@@ -270,14 +270,14 @@ export default function EmployerPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-6 bg-black/70 backdrop-blur-sm"
             onClick={(e) => e.target === e.currentTarget && setShowCreateForm(false)}
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="w-full max-w-lg bg-slate-900 border border-emerald-500/20 rounded-2xl overflow-hidden shadow-2xl"
+              className="w-full sm:max-w-lg bg-slate-900 border border-emerald-500/20 sm:rounded-2xl rounded-t-2xl overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700/50">
                 <h3 className="font-semibold text-white">Create New Job</h3>
