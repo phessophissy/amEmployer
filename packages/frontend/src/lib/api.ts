@@ -18,7 +18,10 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
 
 export const api = {
   jobs: {
-    list: () => apiFetch<any>('/api/jobs'),
+    list: (params?: Record<string, string>) => {
+      const qs = params ? '?' + new URLSearchParams(params).toString() : '';
+      return apiFetch<any>(`/api/jobs${qs}`);
+    },
     get: (id: string) => apiFetch<any>(`/api/jobs/${id}`),
     create: (data: { title: string; description: string; totalBudget: number; employerAddress: string }) =>
       apiFetch<any>('/api/jobs', { method: 'POST', body: JSON.stringify(data) }),
