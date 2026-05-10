@@ -24,6 +24,9 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 
+# Prisma requires OpenSSL and libssl on Alpine
+RUN apk add --no-cache openssl libc6-compat
+
 COPY --from=builder /app/packages/backend/dist ./dist
 # node_modules lives at root in a workspace install
 COPY --from=builder /app/node_modules ./node_modules
