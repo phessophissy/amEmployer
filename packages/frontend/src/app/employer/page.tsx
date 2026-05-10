@@ -6,8 +6,9 @@ import { useWebSocket } from '@/hooks/useWebSocket';
 import { CUSDBalanceWidget } from "@/components/common/CUSDBalanceWidget";
 import { MetricsCard } from '@/components/common/MetricsCard';
 import { AIActivityLog } from '@/components/common/AIActivityLog';
-import { cn, STATUS_COLORS, shortenAddress, timeAgo } from '@/lib/utils';
+import { cn, shortenAddress, timeAgo } from '@/lib/utils';
 import { useWalletContext } from '@/components/common/WalletProvider';
+import { JobCard } from '@/components/employer/JobCard';
 
 interface Job {
   id: string;
@@ -211,45 +212,11 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
                   </button>
                 </div>
               )}
-              {jobs.map((job) => (
-                <div key={job.id} className="px-5 py-4 hover:bg-slate-800/40 transition-colors">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={cn(
-                            'text-xs px-2 py-0.5 rounded border font-mono',
-                            STATUS_COLORS[job.status]
-                          )}
-                        >
-                          {job.status}
-                        </span>
-                        <span className="text-xs text-slate-600 font-mono">{timeAgo(job.createdAt)}</span>
-                      </div>
-                      <p className="text-sm font-medium text-slate-200 truncate">{job.title}</p>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{job.description}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <div className="text-sm font-mono text-emerald-400">
-                        {job.totalBudget} cUSD
-                      </div>
-                      <div className="text-xs text-slate-600 mt-1">
-                        {job.completedCount}/{job.taskCount} tasks
-                      </div>
-                      {job.taskCount > 0 && (
-                        <div className="w-20 h-1 bg-slate-700 rounded-full mt-2 overflow-hidden">
-                          <div
-                            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                            style={{
-                              width: `${Math.round((job.completedCount / job.taskCount) * 100)}%`,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <div className="divide-y divide-slate-700/10">
+                {jobs.map((job, i) => (
+                  <JobCard key={job.id} {...job} index={i} />
+                ))}
+              </div>
             </div>
           </div>
         </div>
