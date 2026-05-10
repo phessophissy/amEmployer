@@ -34,14 +34,20 @@ export default function EmployerPage() {
   // Wallet gate — must connect before accessing employer dashboard
   if (!isConnected) return (
     <div className="max-w-sm mx-auto px-4 py-20 text-center">
-      <div className="text-5xl mb-4">🏢</div>
+      <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+        <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" stroke="#10b981" className="w-8 h-8">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+          <circle cx="12" cy="14" r="2" />
+        </svg>
+      </div>
       <h1 className="text-2xl font-bold text-white mb-2">Employer Dashboard</h1>
-      <p className="text-slate-400 text-sm mb-6">
+      <p className="text-slate-400 text-sm mb-6 leading-relaxed">
         Connect your wallet to post jobs, track tasks, and pay workers automatically with cUSD.
       </p>
       <button
         onClick={connect}
-        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
+        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold rounded-xl transition-colors touch-manipulation"
       >
         Connect Wallet
       </button>
