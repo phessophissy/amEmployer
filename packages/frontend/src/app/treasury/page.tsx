@@ -1,10 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useWebSocket } from '@/hooks/useWebSocket';
 import { SectionHeader } from '@/components/common/SectionHeader';
 import { LiveDot } from '@/components/common/LiveDot';
+import { MetricsCard } from '@/components/common/MetricsCard';
 
 export default function TreasuryPage() {
   const [stats, setStats] = useState<any>(null);
@@ -37,24 +37,14 @@ export default function TreasuryPage() {
 
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, i) => <div key={i} className="h-20 bg-slate-800 rounded-xl animate-pulse" />)}
+          {[...Array(4)].map((_, i) => <div key={i} className="h-20 bg-slate-800 rounded-xl skeleton-shimmer" />)}
         </div>
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Total Paid', value: stats?.payments?.totalAmount || '0', color: 'text-emerald-400' },
-            { label: 'Workers', value: stats?.workers?.total || 0, color: 'text-cyan-400', isNum: true },
-            { label: 'Jobs Run', value: stats?.jobs?.total || 0, color: 'text-purple-400', isNum: true },
-            { label: 'Tasks Done', value: stats?.tasks?.paid || 0, color: 'text-yellow-400', isNum: true },
-          ].map((s, i) => (
-            <motion.div key={s.label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-              className="bg-slate-900/60 border border-slate-700/30 rounded-xl p-4">
-              <div className={`text-xl font-bold font-mono ${s.color}`}>
-                {s.isNum ? s.value : `${parseFloat(s.value as string).toFixed(2)} cUSD`}
-              </div>
-              <div className="text-xs text-slate-500 mt-1">{s.label}</div>
-            </motion.div>
-          ))}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+          <MetricsCard title="Total Paid" value={`${parseFloat(stats?.payments?.totalAmount || '0').toFixed(2)} cUSD`} color="green" trend="up" trendValue="live" />
+          <MetricsCard title="Workers" value={stats?.workers?.total ?? 0} color="cyan" />
+          <MetricsCard title="Jobs Run" value={stats?.jobs?.total ?? 0} color="purple" />
+          <MetricsCard title="Tasks Done" value={stats?.tasks?.paid ?? 0} color="orange" />
         </div>
       )}
 
