@@ -18,11 +18,18 @@ const CreateJobSchema = z.object({
 });
 
 // ─── GET /api/jobs ─────────────────────────────────────────────────────────────
-router.get('/', async (_req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
   try {
+    const { employer } = req.query;
+    const where: Record<string, unknown> = {};
+    if (employer && typeof employer === 'string') {
+      where.employerAddress = employer;
+    }
+
     const jobs = await prisma.job.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
-      take: 50,
+      take: 100,
       include: {
         _count: { select: { tasks: true } },
       },
