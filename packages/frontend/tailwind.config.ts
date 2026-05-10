@@ -99,9 +99,19 @@ const config: Config = {
         'cyber-cyan': '0 0 15px rgba(0, 229, 255, 0.4)',
         'cyber-purple': '0 0 15px rgba(189, 0, 255, 0.4)',
         'inner-glow': 'inset 0 0 20px rgba(0, 255, 136, 0.1)',
+        'card-hover': '0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(16,185,129,0.12)',
+        'modal': '0 24px 64px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.06)',
+        'neon-sm': '0 0 8px rgba(16,185,129,0.5)',
+        'neon-md': '0 0 20px rgba(16,185,129,0.35), 0 0 40px rgba(16,185,129,0.12)',
       },
-    },
-  },
+      transitionTimingFunction: {
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+      },
+      transitionDuration: {
+        '50': '50ms',
+        '400': '400ms',
+      },
   plugins: [require('tailwindcss-animate')],
 };
 
