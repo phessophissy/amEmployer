@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
 import { useWebSocket } from '@/hooks/useWebSocket';
@@ -28,62 +28,89 @@ interface Stats {
 }
 
 export default function EmployerPage() {
+  const { address: walletAddress, isConnected, connect } = useWalletContext();
+
+  // Wallet gate — must connect before accessing employer dashboard
+  if (!isConnected) return (
+    <div className="max-w-sm mx-auto px-4 py-20 text-center">
+      <div className="text-5xl mb-4">🏢</div>
+      <h1 className="text-2xl font-bold text-white mb-2">Employer Dashboard</h1>
+      <p className="text-slate-400 text-sm mb-6">
+        Connect your wallet to post jobs, track tasks, and pay workers automatically with cUSD.
+      </p>
+      <button
+        onClick={connect}
+        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
+      >
+        Connect Wallet
+      </button>
+    </div>
+  );
+
+  return <EmployerDashboard walletAddress={walletAddress!} />;
+}
+
+function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [createError, setCreateError] = useState('');
   const [form, setForm] = useState({
     title: '',
     description: '',
     totalBudget: '',
-    employerAddress: '',
+    employerAddress: walletAddress,
   });
 
   const { connected, aiLogs, taskUpdates, payments } = useWebSocket();
-  const { address: walletAddress } = useWalletContext();
 
-  const load = async () => {
+  const load = useCallback(async () => {
     try {
-      const [jobsRes, statsRes] = await Promise.all([api.jobs.list(), api.stats.platform()]);
+      const [jobsRes, statsRes] = await Promise.all([
+        // Filter jobs to only this employer's jobs
+        api.jobs.list({ employer: walletAddress }),
+        api.stats.platform(),
+      ]);
       setJobs(jobsRes.data || []);
       setStats(statsRes.data);
     } finally {
       setLoading(false);
     }
-  };
+  }, [walletAddress]);
 
   useEffect(() => {
     load();
     const interval = setInterval(load, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [load]);
 
   // Refresh when tasks update
   useEffect(() => {
     if (taskUpdates.length) load();
-  }, [taskUpdates]);
+  }, [taskUpdates, load]);
 
+  // Keep employerAddress in form synced
   useEffect(() => {
-    if (walletAddress) {
-      setForm((prev) => ({ ...prev, employerAddress: walletAddress }));
-    }
+    setForm((prev) => ({ ...prev, employerAddress: walletAddress }));
   }, [walletAddress]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
+    setCreateError('');
     try {
       await api.jobs.create({
         title: form.title,
         description: form.description,
         totalBudget: parseFloat(form.totalBudget),
-        employerAddress: form.employerAddress,
+        employerAddress: walletAddress,
       });
       setShowCreateForm(false);
-      setForm({ title: '', description: '', totalBudget: '', employerAddress: form.employerAddress });
+      setForm({ title: '', description: '', totalBudget: '', employerAddress: walletAddress });
       load();
     } catch (err: any) {
-      alert(err.message);
+      setCreateError(err.message || 'Failed to create job');
     }
   };
 
@@ -166,8 +193,8 @@ export default function EmployerPage() {
         <div className="lg:col-span-2">
           <div className="bg-slate-900/50 border border-slate-700/30 rounded-xl overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/30">
-              <h2 className="font-semibold text-slate-200">Active Jobs</h2>
-              <span className="text-xs font-mono text-slate-500">{jobs.length} total</span>
+              <h2 className="font-semibold text-slate-200">My Jobs</h2>
+              <span className="text-xs font-mono text-slate-500">{jobs.length} job{jobs.length !== 1 ? 's' : ''}</span>
             </div>
             <div className="divide-y divide-slate-700/20">
               {loading && (
@@ -331,15 +358,17 @@ export default function EmployerPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-mono text-slate-500 mb-1.5 uppercase tracking-wider">
-                    Employer Address
+                    Employer Wallet
                   </label>
-                  <input
-                    required
-                    value={form.employerAddress}
-                    onChange={(e) => setForm({ ...form, employerAddress: e.target.value })}
-                    className="w-full bg-slate-800 border border-slate-600 focus:border-emerald-500 rounded-lg px-4 py-2.5 text-slate-200 font-mono text-xs outline-none transition-colors"
-                  />
+                  <div className="px-4 py-2.5 bg-slate-800/60 border border-slate-700 rounded-lg text-xs font-mono text-emerald-400 break-all">
+                    {walletAddress}
+                  </div>
                 </div>
+                {createError && (
+                  <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+                    {createError}
+                  </p>
+                )}
                 <button
                   type="submit"
                   className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-lg transition-colors text-sm"
