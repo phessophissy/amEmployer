@@ -66,10 +66,14 @@ router.post('/', async (req: Request, res: Response) => {
       },
     });
 
-    // Enqueue decomposition
-    await decompositionQueue.add('decompose', { jobId: job.id });
-
     logger.info(`Job created: ${job.id} — "${job.title}"`);
+
+    // Enqueue decomposition — non-blocking: job is already saved so don't fail
+    // the request if Redis is temporarily unavailable.
+    decompositionQueue.add('decompose', { jobId: job.id }).catch((qErr) => {
+      logger.error(`Failed to enqueue decomposition for job ${job.id} — will retry on next poll`, { qErr });
+    });
+
     res.status(201).json({ success: true, data: job });
   } catch (err) {
     if (err instanceof z.ZodError) {
@@ -111,7 +115,9 @@ router.post('/demo/launch', async (_req: Request, res: Response) => {
           status: 'PENDING',
         },
       });
-      await decompositionQueue.add('decompose', { jobId: job.id });
+      decompositionQueue.add('decompose', { jobId: job.id }).catch((qErr) => {
+        logger.error(`Failed to enqueue demo job ${job.id}`, { qErr });
+      });
       created.push(job);
     }
 
