@@ -9,8 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from 'recharts';
 import { api } from '@/lib/api';
 import { useWebSocket } from '@/hooks/useWebSocket';
@@ -47,6 +45,7 @@ export default function SimulationPage() {
   const [wallets, setWallets] = useState<SimulationWallet[]>([]);
   const [loading, setLoading] = useState(false);
   const [launching, setLaunching] = useState(false);
+  const [launchError, setLaunchError] = useState('');
   const [queueStats, setQueueStats] = useState<any[]>([]);
   const [paymentChart, setPaymentChart] = useState<ChartPoint[]>([]);
   const [walletCount, setWalletCount] = useState(100);
@@ -117,10 +116,9 @@ export default function SimulationPage() {
 
   const handleLaunch = async () => {
     setLaunching(true);
+    setLaunchError('');
     try {
-      // First launch the demo jobs
       await api.jobs.launchDemo();
-      // Then start simulation
       const res = await api.simulation.start({
         walletCount,
         name: `Stress Test — ${walletCount} wallets — ${new Date().toLocaleTimeString()}`,
@@ -128,7 +126,7 @@ export default function SimulationPage() {
       setActiveSimId(res.data.id);
       await loadSimulations();
     } catch (err: any) {
-      alert(err.message);
+      setLaunchError(err.message || 'Failed to launch');
     } finally {
       setLaunching(false);
     }
@@ -141,19 +139,19 @@ export default function SimulationPage() {
     : '0.00';
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       {/* Header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">
             Simulation <span className="text-purple-400">Dashboard</span>
           </h1>
-          <p className="text-slate-500 mt-1 font-mono text-sm">
+          <p className="text-slate-500 mt-1 font-mono text-xs sm:text-sm">
             {connected ? <span className="text-emerald-400">● LIVE</span> : <span className="text-slate-600">○ OFFLINE</span>}
-            {' '}— Mass wallet interaction stress test
+            {' '}— Mass wallet stress test
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -162,27 +160,30 @@ export default function SimulationPage() {
               className="w-20 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 font-mono text-center outline-none focus:border-purple-500"
             />
             <span className="text-slate-500 text-sm">wallets</span>
+            <motion.button
+              whileTap={{ scale: 0.97 }}
+              onClick={handleLaunch}
+              disabled={launching}
+              className="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-200 text-sm disabled:opacity-50"
+            >
+              {launching ? (
+                <span className="flex items-center gap-2 justify-center">
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Spawning...
+                </span>
+              ) : (
+                '⚡ Launch'
+              )}
+            </motion.button>
           </div>
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={handleLaunch}
-            disabled={launching}
-            className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold rounded-lg transition-all duration-200 text-sm disabled:opacity-50 shadow-cyber-purple"
-          >
-            {launching ? (
-              <span className="flex items-center gap-2">
-                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Spawning Workers...
-              </span>
-            ) : (
-              '⚡ Launch Autonomous Economy'
-            )}
-          </motion.button>
+          {launchError && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">{launchError}</p>
+          )}
         </div>
       </div>
 
       {/* Metrics row */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 mb-6">
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-6">
         <MetricsCard title="Wallets" value={wallets.length || walletCount} color="purple" />
         <MetricsCard title="Active" value={activeSim?.tasksCreated ?? 0} subtitle="tasks" color="cyan" />
         <MetricsCard title="Completed" value={activeSim?.tasksCompleted ?? 0} color="green" />
@@ -195,20 +196,20 @@ export default function SimulationPage() {
         {/* Wallet Grid */}
         <div className="lg:col-span-2">
           <div className="bg-slate-900/50 border border-slate-700/30 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/30">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-slate-700/30">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-slate-200">Wallet Activity Grid</span>
-                <span className="text-xs font-mono text-slate-500">({wallets.length} wallets)</span>
+                <span className="text-sm font-semibold text-slate-200">Wallet Activity</span>
+                <span className="text-xs font-mono text-slate-500">({wallets.length || walletCount})</span>
               </div>
-              <div className="flex items-center gap-3 text-xs">
+              <div className="flex items-center gap-2 sm:gap-3 text-xs">
                 {[
                   { label: 'Idle', color: 'bg-slate-700' },
                   { label: 'Working', color: 'bg-yellow-500' },
                   { label: 'Paid', color: 'bg-emerald-500' },
                   { label: 'Failed', color: 'bg-red-500' },
                 ].map((s) => (
-                  <div key={s.label} className="flex items-center gap-1.5">
-                    <span className={`w-2 h-2 rounded-full ${s.color}`} />
+                  <div key={s.label} className="flex items-center gap-1">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${s.color}`} />
                     <span className="text-slate-500">{s.label}</span>
                   </div>
                 ))}
@@ -216,8 +217,10 @@ export default function SimulationPage() {
             </div>
 
             {wallets.length > 0 ? (
-              <div className="p-4 h-[320px] overflow-y-auto">
-                <div className="grid grid-cols-20 gap-1" style={{ gridTemplateColumns: 'repeat(20, 1fr)' }}>
+              <div className="p-3 h-[260px] sm:h-[320px] overflow-y-auto">
+                {/* 10 cols on mobile, 20 on sm+ */}
+                <div className="grid gap-1" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }} data-mobile-grid>
+                  <style>{`@media (min-width: 640px) { [data-mobile-grid] { grid-template-columns: repeat(20, 1fr) !important; } }`}</style>
                   {wallets.map((w) => (
                     <motion.div
                       key={w.id}
@@ -230,19 +233,14 @@ export default function SimulationPage() {
                       title={`${shortenAddress(w.walletAddress)} | ${w.tasksCompleted} tasks | ${parseFloat(w.earnings).toFixed(4)} cUSD`}
                     />
                   ))}
-                  {/* Placeholder dots if simulation not started */}
-                  {wallets.length === 0 &&
-                    Array.from({ length: walletCount }).map((_, i) => (
-                      <div key={i} className="w-full aspect-square rounded-sm bg-slate-800" />
-                    ))}
                 </div>
               </div>
             ) : (
-              <div className="p-4 h-[320px] flex items-center justify-center">
-                <div className="text-center">
+              <div className="p-3 h-[260px] sm:h-[320px] flex items-center justify-center">
+                <div className="text-center w-full">
                   <p className="text-slate-600 font-mono text-sm mb-4">No simulation running</p>
-                  <div className="grid grid-cols-20 gap-1 opacity-20" style={{ gridTemplateColumns: 'repeat(20, 1fr)' }}>
-                    {Array.from({ length: walletCount }).map((_, i) => (
+                  <div className="grid gap-1 opacity-20" style={{ gridTemplateColumns: 'repeat(10, 1fr)' }}>
+                    {Array.from({ length: Math.min(walletCount, 100) }).map((_, i) => (
                       <div key={i} className="w-full aspect-square rounded-sm bg-slate-600" />
                     ))}
                   </div>
@@ -373,18 +371,18 @@ export default function SimulationPage() {
               <div
                 key={sim.id}
                 className={cn(
-                  'px-5 py-3 flex items-center justify-between cursor-pointer hover:bg-slate-800/40 transition-colors',
+                  'px-4 py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4 cursor-pointer hover:bg-slate-800/40 transition-colors',
                   activeSimId === sim.id && 'bg-slate-800/40 border-l-2 border-purple-500'
                 )}
                 onClick={() => setActiveSimId(sim.id)}
               >
-                <div>
-                  <p className="text-sm text-slate-200">{sim.name}</p>
+                <div className="min-w-0">
+                  <p className="text-sm text-slate-200 truncate">{sim.name}</p>
                   <p className="text-xs text-slate-500 font-mono">
                     {sim.walletCount} wallets · {timeAgo(sim.startedAt)}
                   </p>
                 </div>
-                <div className="flex items-center gap-4 text-xs font-mono">
+                <div className="flex items-center gap-3 text-xs font-mono flex-shrink-0">
                   <span className="text-emerald-400">{sim.tasksCompleted} done</span>
                   <span className="text-red-400">{sim.tasksFailed} failed</span>
                   <span
