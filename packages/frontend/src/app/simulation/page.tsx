@@ -184,12 +184,12 @@ export default function SimulationPage() {
 
       {/* Metrics row */}
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-6">
-        <MetricsCard title="Wallets" value={wallets.length || walletCount} color="purple" />
-        <MetricsCard title="Active" value={activeSim?.tasksCreated ?? 0} subtitle="tasks" color="cyan" />
-        <MetricsCard title="Completed" value={activeSim?.tasksCompleted ?? 0} color="green" />
-        <MetricsCard title="Failed" value={activeSim?.tasksFailed ?? 0} color="orange" />
-        <MetricsCard title="Paid Out" value={`${totalEarnings.toFixed(2)}`} subtitle="cUSD" color="green" />
-        <MetricsCard title="Est. TPS" value={tps} subtitle="tx/sec" color="cyan" />
+        <MetricsCard compact title="Wallets" value={wallets.length || walletCount} color="purple" />
+        <MetricsCard compact title="Active" value={activeSim?.tasksCreated ?? 0} subtitle="tasks" color="cyan" />
+        <MetricsCard compact title="Done" value={activeSim?.tasksCompleted ?? 0} color="green" />
+        <MetricsCard compact title="Failed" value={activeSim?.tasksFailed ?? 0} color="orange" />
+        <MetricsCard compact title="Paid Out" value={totalEarnings.toFixed(2)} subtitle="cUSD" color="green" />
+        <MetricsCard compact title="Est. TPS" value={tps} subtitle="tx/sec" color="cyan" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
