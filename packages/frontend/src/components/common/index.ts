@@ -19,6 +19,7 @@ export { LiveDot } from './LiveDot';
 export { SectionHeader } from './SectionHeader';
 export { RefreshButton } from './RefreshButton';
 export { NetworkBadge } from './NetworkBadge';
+export { WrongNetworkBanner } from './WrongNetworkBanner';
 export { AnimatedCounter } from './AnimatedCounter';
 export { ThemeSwitcher } from './ThemeSwitcher';
 export { PageTransition } from './PageTransition';

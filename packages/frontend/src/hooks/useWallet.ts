@@ -8,7 +8,10 @@ export interface WalletState {
   isConnected: boolean;
   isMiniPayEnv: boolean;
   isLoading: boolean;
+  isWrongNetwork: boolean;
+  currentChainId: number | null;
   connect: () => Promise<void>;
+  switchToCelo: () => Promise<void>;
   refresh: () => Promise<void>;
 }
 
@@ -16,20 +19,27 @@ export function useWallet(): WalletState {
   const [address, setAddress] = useState<`0x${string}` | null>(null);
   const [balance, setBalance] = useState('0.00');
   const [isLoading, setIsLoading] = useState(true);
+  const [currentChainId, setCurrentChainId] = useState<number | null>(null);
   const [isMiniPayEnv] = useState<boolean>(() => {
     if (typeof window === 'undefined') return false;
     return isMiniPay();
   });
 
+  // Derive wrong-network from chain state (MiniPay is always Celo, skip check)
+  const isWrongNetwork = !isMiniPayEnv && currentChainId !== null && currentChainId !== 42220;
+
   const ensureCeloNetwork = useCallback(async () => {
     if (typeof window === 'undefined' || !window.ethereum) return;
     try {
       const chainIdHex: string = await (window.ethereum as any).request({ method: 'eth_chainId' });
-      if (parseInt(chainIdHex, 16) !== 42220) {
+      const chainId = parseInt(chainIdHex, 16);
+      setCurrentChainId(chainId);
+      if (chainId !== 42220) {
         await (window.ethereum as any).request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0xA4EC' }], // 42220 = 0xA4EC
         });
+        setCurrentChainId(42220);
       }
     } catch (switchError: any) {
       // Chain not added yet — add Celo Mainnet
@@ -44,9 +54,13 @@ export function useWallet(): WalletState {
             blockExplorerUrls: ['https://celoscan.io'],
           }],
         });
+        setCurrentChainId(42220);
       }
     }
   }, []);
+
+  // Public alias so components can trigger a switch without calling connect()
+  const switchToCelo = ensureCeloNetwork;
 
   const connect = useCallback(async () => {
     try {
@@ -79,6 +93,12 @@ export function useWallet(): WalletState {
       setIsLoading(true);
       try {
         if (typeof window === 'undefined' || !window.ethereum) return;
+
+        // Detect current chain
+        try {
+          const chainIdHex: string = await (window.ethereum as any).request({ method: 'eth_chainId' });
+          if (!cancelled) setCurrentChainId(parseInt(chainIdHex, 16));
+        } catch { /* no wallet injected */ }
 
         if (isMiniPay()) {
           // MiniPay: silently get address without a popup
@@ -125,13 +145,26 @@ export function useWallet(): WalletState {
     return () => (window.ethereum as any).removeListener('accountsChanged', handleChange);
   }, []);
 
+  // Listen for chain/network changes
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.ethereum) return;
+    const handleChainChanged = (chainIdHex: string) => {
+      setCurrentChainId(parseInt(chainIdHex, 16));
+    };
+    (window.ethereum as any).on('chainChanged', handleChainChanged);
+    return () => (window.ethereum as any).removeListener('chainChanged', handleChainChanged);
+  }, []);
+
   return {
     address,
     balance,
     isConnected: !!address,
     isMiniPayEnv,
     isLoading,
+    isWrongNetwork,
+    currentChainId,
     connect,
+    switchToCelo,
     refresh,
   };
 }

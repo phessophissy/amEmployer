@@ -20,7 +20,7 @@ function shortenAddr(addr: string) {
 export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { address, balance, isConnected, isMiniPayEnv, connect } = useWalletContext();
+  const { address, balance, isConnected, isMiniPayEnv, isWrongNetwork, connect } = useWalletContext();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 border-b border-emerald-500/10 bg-black/90 backdrop-blur-xl">
@@ -55,13 +55,13 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           {isConnected ? (
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
-              <span className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse flex-shrink-0" />
+            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${isWrongNetwork ? 'bg-red-500/10 border-red-500/30' : 'bg-emerald-500/10 border-emerald-500/20'}`}>
+              <span className={`w-2 h-2 rounded-full animate-pulse flex-shrink-0 ${isWrongNetwork ? 'bg-red-400' : 'bg-emerald-400'}`} />
               <span className="text-xs font-mono text-emerald-400 hidden sm:block">
                 {shortenAddr(address!)}
               </span>
               <span className="text-xs font-mono text-slate-400 hidden md:block">
-                {balance} cUSD
+                {isWrongNetwork ? <span className="text-red-400">Wrong Network</span> : `${balance} cUSD`}
               </span>
             </div>
           ) : (

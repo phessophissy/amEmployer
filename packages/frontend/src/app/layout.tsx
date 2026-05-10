@@ -4,6 +4,7 @@ import { ToastContainer } from "@/components/ui/Toast";
 import { Navbar } from '@/components/common/Navbar';
 import { WalletProvider } from '@/components/common/WalletProvider';
 import { MobileNav } from '@/components/common/MobileNav';
+import { WrongNetworkBanner } from '@/components/common/WrongNetworkBanner';
 
 export const metadata: Metadata = {
   title: 'amEmployer — Autonomous AI Labor Platform on Celo',
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="cyber-bg min-h-screen text-slate-100 antialiased">
         <WalletProvider>
           <Navbar />
+          <WrongNetworkBanner />
           <MobileNav />
           <main className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>{children}</main>
         </WalletProvider>
