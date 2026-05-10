@@ -50,7 +50,7 @@ export const paymentQueue = new Queue(QUEUE_NAMES.PAYMENT_RELEASE, {
 export const simulationQueue = new Queue(QUEUE_NAMES.WORKER_SIMULATION, {
   connection,
   defaultJobOptions: { attempts: 2, backoff: { type: 'fixed', delay: 1000 } },
-  limiter: { max: 20, duration: 1000 }, // 20 simulation jobs/sec max
+  // Note: limiter moved to Worker options in BullMQ v5
 });
 
 // ─── Workers ──────────────────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ export function initQueues() {
         where: { status: { in: ['ASSIGNED', 'SUBMITTED'] }, assignedWorker: { not: null } },
         select: { assignedWorker: true },
       });
-      const busyAddresses = busyWorkers.map((t) => t.assignedWorker!);
+      const busyAddresses = busyWorkers.map((t: { assignedWorker: string | null }) => t.assignedWorker!);
 
       const availableWorkers = await prisma.worker.findMany({
         where: {
@@ -131,7 +131,7 @@ export function initQueues() {
         throw new Error('No available workers — will retry');
       }
 
-      const workerAddresses = availableWorkers.map((w) => w.walletAddress);
+      const workerAddresses = availableWorkers.map((w: { walletAddress: string }) => w.walletAddress);
       const selectedAddress = await orchestrator.selectWorkerForTask(taskId, workerAddresses);
       if (!selectedAddress) throw new Error('Worker selection failed');
 

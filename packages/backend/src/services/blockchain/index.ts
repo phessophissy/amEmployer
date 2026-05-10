@@ -31,8 +31,8 @@ const ERC20_ABI = [
 
 class BlockchainService {
   private provider: ethers.JsonRpcProvider;
-  private employerWallet: ethers.Wallet;
-  private validatorWallet: ethers.Wallet;
+  private employerWallet: ethers.Wallet | ethers.HDNodeWallet;
+  private validatorWallet: ethers.Wallet | ethers.HDNodeWallet;
   private taskManagerAddress: string;
   private cusdAddress: string;
   private taskManager: ethers.Contract;

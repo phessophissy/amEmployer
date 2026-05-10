@@ -86,7 +86,7 @@ router.get('/activity', async (_req: Request, res: Response) => {
 
     // Group into hourly buckets
     const buckets: Record<string, { count: number; amount: number }> = {};
-    payments.forEach((p) => {
+    payments.forEach((p: { createdAt: Date; amount: { toString(): string } }) => {
       const hour = new Date(p.createdAt);
       hour.setMinutes(0, 0, 0);
       const key = hour.toISOString();
