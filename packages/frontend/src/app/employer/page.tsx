@@ -72,6 +72,7 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
   });
 
   const { connected, aiLogs, taskUpdates, payments } = useWebSocket();
+  const toast = useToast();
 
   const load = useCallback(async () => {
     try {
@@ -115,9 +116,11 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
       });
       setShowCreateForm(false);
       setForm({ title: '', description: '', totalBudget: '', employerAddress: walletAddress });
+      toast.success('Job posted successfully', form.title);
       load();
     } catch (err: any) {
       setCreateError(err.message || 'Failed to create job');
+      toast.error(err.message || 'Failed to create job', 'Job creation failed');
     }
   };
 
@@ -125,6 +128,7 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
     setDemoLoading(true);
     try {
       await api.jobs.launchDemo();
+      toast.info('Demo job launched — AI workers assigned', 'Demo mode');
       load();
     } finally {
       setDemoLoading(false);

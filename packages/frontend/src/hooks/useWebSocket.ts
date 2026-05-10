@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
+import { useToast } from './useToast';
 
 const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'http://localhost:4000';
 
@@ -28,6 +29,7 @@ interface PaymentEvent {
 
 export function useWebSocket() {
   const socketRef = useRef<Socket | null>(null);
+  const toast = useToast();
   const [connected, setConnected] = useState(false);
   const [aiLogs, setAiLogs] = useState<AILogEntry[]>([]);
   const [taskUpdates, setTaskUpdates] = useState<TaskUpdate[]>([]);
@@ -56,6 +58,7 @@ export function useWebSocket() {
 
     socket.on('payment:new', (payment: PaymentEvent) => {
       setPayments((prev) => [payment, ...prev].slice(0, 100));
+      toast.payment(`${payment.amount}`, payment.worker);
     });
 
     socket.on('simulation:update', (data: Record<string, unknown>) => {
