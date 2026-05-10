@@ -6,9 +6,9 @@ import { useWebSocket } from '@/hooks/useWebSocket';
 import { CUSDBalanceWidget } from "@/components/common/CUSDBalanceWidget";
 import { MetricsCard } from '@/components/common/MetricsCard';
 import { AIActivityLog } from '@/components/common/AIActivityLog';
-import { cn, STATUS_COLORS, shortenAddress, timeAgo } from '@/lib/utils';
+import { cn, shortenAddress, timeAgo } from '@/lib/utils';
 import { useWalletContext } from '@/components/common/WalletProvider';
-import { useToast } from '@/hooks/useToast';
+import { JobCard } from '@/components/employer/JobCard';
 
 interface Job {
   id: string;
@@ -34,14 +34,20 @@ export default function EmployerPage() {
   // Wallet gate — must connect before accessing employer dashboard
   if (!isConnected) return (
     <div className="max-w-sm mx-auto px-4 py-20 text-center">
-      <div className="text-5xl mb-4">🏢</div>
+      <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+        <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" stroke="#10b981" className="w-8 h-8">
+          <rect x="2" y="7" width="20" height="14" rx="2" />
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" />
+          <circle cx="12" cy="14" r="2" />
+        </svg>
+      </div>
       <h1 className="text-2xl font-bold text-white mb-2">Employer Dashboard</h1>
-      <p className="text-slate-400 text-sm mb-6">
+      <p className="text-slate-400 text-sm mb-6 leading-relaxed">
         Connect your wallet to post jobs, track tasks, and pay workers automatically with cUSD.
       </p>
       <button
         onClick={connect}
-        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors"
+        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold rounded-xl transition-colors touch-manipulation"
       >
         Connect Wallet
       </button>
@@ -216,45 +222,11 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
                   </button>
                 </div>
               )}
-              {jobs.map((job) => (
-                <div key={job.id} className="px-5 py-4 hover:bg-slate-800/40 transition-colors">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span
-                          className={cn(
-                            'text-xs px-2 py-0.5 rounded border font-mono',
-                            STATUS_COLORS[job.status]
-                          )}
-                        >
-                          {job.status}
-                        </span>
-                        <span className="text-xs text-slate-600 font-mono">{timeAgo(job.createdAt)}</span>
-                      </div>
-                      <p className="text-sm font-medium text-slate-200 truncate">{job.title}</p>
-                      <p className="text-xs text-slate-500 mt-1 line-clamp-2">{job.description}</p>
-                    </div>
-                    <div className="text-right flex-shrink-0">
-                      <div className="text-sm font-mono text-emerald-400">
-                        {job.totalBudget} cUSD
-                      </div>
-                      <div className="text-xs text-slate-600 mt-1">
-                        {job.completedCount}/{job.taskCount} tasks
-                      </div>
-                      {job.taskCount > 0 && (
-                        <div className="w-20 h-1 bg-slate-700 rounded-full mt-2 overflow-hidden">
-                          <div
-                            className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                            style={{
-                              width: `${Math.round((job.completedCount / job.taskCount) * 100)}%`,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
+              <div className="divide-y divide-slate-700/10">
+                {jobs.map((job, i) => (
+                  <JobCard key={job.id} {...job} index={i} />
+                ))}
+              </div>
             </div>
           </div>
         </div>

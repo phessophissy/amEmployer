@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import { useWalletContext } from './WalletProvider';
 
@@ -20,10 +21,20 @@ function shortenAddr(addr: string) {
 export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const { address, balance, isConnected, isMiniPayEnv, isWrongNetwork, connect } = useWalletContext();
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Close menu on route change
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 border-b border-emerald-500/10 bg-black/90 backdrop-blur-xl">
+    <nav className={`fixed top-0 left-0 right-0 z-40 border-b border-emerald-500/10 bg-black/90 backdrop-blur-xl transition-shadow duration-200 ${scrolled ? 'shadow-[0_4px_24px_rgba(0,0,0,0.5)]' : ''}`}>
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
@@ -77,15 +88,39 @@ export function Navbar() {
           <button
             className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all"
             onClick={() => setMenuOpen((o) => !o)}
-            aria-label="Toggle menu"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
           >
-            {menuOpen ? '✕' : '☰'}
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" strokeWidth="2" strokeLinecap="round" stroke="currentColor">
+              <motion.line
+                x1="3" y1="6" x2="21" y2="6"
+                animate={menuOpen ? { x1: 5, y1: 5, x2: 19, y2: 19 } : { x1: 3, y1: 6, x2: 21, y2: 6 }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.line
+                x1="3" y1="12" x2="21" y2="12"
+                animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
+                transition={{ duration: 0.15 }}
+              />
+              <motion.line
+                x1="3" y1="18" x2="21" y2="18"
+                animate={menuOpen ? { x1: 5, y1: 19, x2: 19, y2: 5 } : { x1: 3, y1: 18, x2: 21, y2: 18 }}
+                transition={{ duration: 0.2 }}
+              />
+            </svg>
           </button>
         </div>
       </div>
 
+      <AnimatePresence>
       {menuOpen && (
-        <div className="lg:hidden border-t border-emerald-500/10 bg-black/95 px-4 py-3 space-y-1">
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -8 }}
+          transition={{ duration: 0.18 }}
+          className="lg:hidden border-t border-emerald-500/10 bg-black/95 px-4 py-3 space-y-1"
+        >
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -107,8 +142,9 @@ export function Navbar() {
               <p className="text-xs font-mono text-slate-400 px-4 mt-0.5">{balance} cUSD</p>
             </div>
           )}
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </nav>
   );
 }
