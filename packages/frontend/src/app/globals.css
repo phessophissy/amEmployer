@@ -63,9 +63,22 @@ body {
 .cyber-bg {
   background-color: #030712;
   background-image:
-    linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+    linear-gradient(rgba(0, 255, 136, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 136, 0.025) 1px, transparent 1px);
+  background-size: 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Radial vignette for mobile — hides grid at screen edges */
+@media (max-width: 640px) {
+  .cyber-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse 120% 80% at 50% 60%, transparent 50%, #030712 100%);
+    z-index: 0;
+  }
 }
 
 /* Glowing text utility */
