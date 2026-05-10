@@ -49,7 +49,7 @@ router.get('/open', async (_req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const task = await prisma.task.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
       include: { job: true, payments: true },
     });
     if (!task) return res.status(404).json({ error: 'Task not found' });
@@ -68,7 +68,7 @@ const SubmitWorkSchema = z.object({
 router.post('/:id/submit', async (req: Request, res: Response) => {
   try {
     const body = SubmitWorkSchema.parse(req.body);
-    const taskId = req.params.id;
+    const taskId = String(req.params.id);
 
     const task = await prisma.task.findUnique({ where: { id: taskId } });
     if (!task) return res.status(404).json({ error: 'Task not found' });

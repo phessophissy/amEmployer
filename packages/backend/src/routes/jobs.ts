@@ -38,7 +38,7 @@ router.get('/', async (_req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const job = await prisma.job.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
       include: {
         tasks: { orderBy: { createdAt: 'desc' } },
         aiLogs: { orderBy: { createdAt: 'desc' }, take: 50 },
@@ -126,7 +126,7 @@ router.post('/demo/launch', async (_req: Request, res: Response) => {
 router.get('/:id/ai-logs', async (req: Request, res: Response) => {
   try {
     const logs = await prisma.aILog.findMany({
-      where: { jobId: req.params.id },
+      where: { jobId: String(req.params.id) },
       orderBy: { createdAt: 'desc' },
       take: 100,
     });

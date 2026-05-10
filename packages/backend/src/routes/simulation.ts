@@ -128,7 +128,7 @@ router.get('/', async (_req: Request, res: Response) => {
 router.get('/:id', async (req: Request, res: Response) => {
   try {
     const sim = await prisma.simulationRun.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
       include: {
         wallets: { orderBy: { earnings: 'desc' }, take: 100 },
       },

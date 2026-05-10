@@ -43,7 +43,7 @@ router.get('/leaderboard', async (_req: Request, res: Response) => {
 router.get('/:address', async (req: Request, res: Response) => {
   try {
     const worker = await prisma.worker.findUnique({
-      where: { walletAddress: req.params.address },
+      where: { walletAddress: String(req.params.address) },
       include: {
         payments: {
           orderBy: { createdAt: 'desc' },

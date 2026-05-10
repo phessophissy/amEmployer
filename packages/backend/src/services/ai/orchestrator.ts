@@ -219,7 +219,7 @@ export class AIOrchestrator {
           jobId: jobId || null,
           type: type as any,
           message,
-          metadata: metadata || undefined,
+          metadata: (metadata as any) || undefined,
         },
       });
     } catch (err) {
