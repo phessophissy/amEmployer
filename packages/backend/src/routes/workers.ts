@@ -175,3 +175,22 @@ router.get('/:address/tasks', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch worker tasks' });
   }
 });
+
+// ─── GET /api/workers/:address/earnings ───────────────────────────────────
+router.get('/:address/earnings', async (req: Request, res: Response) => {
+  try {
+    const worker = await prisma.worker.findUnique({
+      where: { walletAddress: String(req.params.address) },
+    });
+    if (!worker) return res.status(404).json({ error: 'Worker not found' });
+    const payments = await prisma.payment.findMany({
+      where: { workerId: worker.id, status: 'CONFIRMED' },
+      orderBy: { createdAt: 'desc' },
+      select: { amount: true, createdAt: true, txHash: true },
+    });
+    const total = payments.reduce((s, p) => s + Number(p.amount), 0);
+    res.json({ success: true, data: { total: total.toFixed(18), payments } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch earnings' });
+  }
+});
