@@ -8,6 +8,7 @@ import tasksRouter from './routes/tasks';
 import workersRouter from './routes/workers';
 import simulationRouter from './routes/simulation';
 import statsRouter from './routes/stats';
+import paymentsRouter from './routes/payments';
 
 const app = express();
 
@@ -68,4 +69,5 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error', message: err.message });
 });
 
+app.use('/api/payments', paymentsRouter);
 export default app;
