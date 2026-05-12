@@ -184,3 +184,22 @@ router.get('/:id/stats', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch job stats' });
   }
 });
+
+// ─── GET /api/jobs/:id/payments ────────────────────────────────────────────
+router.get('/:id/payments', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const payments = await prisma.payment.findMany({
+      where: { task: { jobId } },
+      include: {
+        task: { select: { title: true, reward: true } },
+        worker: { select: { walletAddress: true, personaName: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    const total = payments.reduce((s, p) => s + Number(p.amount), 0);
+    res.json({ success: true, data: { payments, totalPaid: total.toFixed(18) } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job payments' });
+  }
+});
