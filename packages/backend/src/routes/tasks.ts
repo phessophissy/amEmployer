@@ -107,3 +107,20 @@ router.post('/:id/assign', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/tasks/stats ──────────────────────────────────────────────────
+router.get('/stats', async (_req: Request, res: Response) => {
+  try {
+    const [open, assigned, submitted, verified, paid, rejected] = await Promise.all([
+      prisma.task.count({ where: { status: 'OPEN' } }),
+      prisma.task.count({ where: { status: 'ASSIGNED' } }),
+      prisma.task.count({ where: { status: 'SUBMITTED' } }),
+      prisma.task.count({ where: { status: 'VERIFIED' } }),
+      prisma.task.count({ where: { status: 'PAID' } }),
+      prisma.task.count({ where: { status: 'REJECTED' } }),
+    ]);
+    res.json({ success: true, data: { open, assigned, submitted, verified, paid, rejected } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch task stats' });
+  }
+});
