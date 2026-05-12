@@ -157,3 +157,21 @@ router.get('/by-type/:type', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch workers by type' });
   }
 });
+
+// ─── GET /api/workers/:address/tasks ──────────────────────────────────────
+router.get('/:address/tasks', async (req: Request, res: Response) => {
+  try {
+    const { status, limit = '20' } = req.query;
+    const where: Record<string, unknown> = { assignedWorker: String(req.params.address) };
+    if (status) where.status = String(status);
+    const tasks = await prisma.task.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+      include: { job: { select: { title: true } } },
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch worker tasks' });
+  }
+});
