@@ -77,3 +77,20 @@ router.get('/daily', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch daily payments' });
   }
 });
+
+// ─── GET /api/payments/:id ─────────────────────────────────────────────────
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const payment = await prisma.payment.findUnique({
+      where: { id: String(req.params.id) },
+      include: {
+        task: { include: { job: { select: { title: true } } } },
+        worker: { select: { walletAddress: true, personaName: true, reputation: true } },
+      },
+    });
+    if (!payment) return res.status(404).json({ error: 'Payment not found' });
+    res.json({ success: true, data: payment });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch payment' });
+  }
+});
