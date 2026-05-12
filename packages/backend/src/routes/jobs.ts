@@ -164,3 +164,23 @@ router.get('/active', async (_req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch active jobs' });
   }
 });
+
+// ─── GET /api/jobs/:id/stats ───────────────────────────────────────────────
+router.get('/:id/stats', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const taskCounts = await prisma.task.groupBy({
+      by: ['status'],
+      where: { jobId },
+      _count: { status: true },
+    });
+    const tasksByStatus = Object.fromEntries(
+      taskCounts.map((t) => [t.status, t._count.status])
+    );
+    res.json({ success: true, data: { jobId, tasksByStatus } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job stats' });
+  }
+});
