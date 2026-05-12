@@ -96,3 +96,26 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/workers/search ──────────────────────────────────────────────
+router.get('/search', async (req: Request, res: Response) => {
+  try {
+    const { q, limit = '20' } = req.query;
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({ error: 'Missing query param: q' });
+    }
+    const workers = await prisma.worker.findMany({
+      where: {
+        OR: [
+          { walletAddress: { contains: q, mode: 'insensitive' } },
+          { personaName: { contains: q, mode: 'insensitive' } },
+        ],
+      },
+      take: Math.min(parseInt(String(limit)), 50),
+      orderBy: { reputation: 'desc' },
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
