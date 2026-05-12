@@ -138,3 +138,22 @@ router.get('/top-earners', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch top earners' });
   }
 });
+
+// ─── GET /api/workers/by-type/:type ───────────────────────────────────────
+router.get('/by-type/:type', async (req: Request, res: Response) => {
+  try {
+    const validTypes = ['HUMAN', 'SCRIPTED', 'AI_AGENT'];
+    const type = String(req.params.type).toUpperCase();
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({ error: `Invalid type. Must be one of: ${validTypes.join(', ')}` });
+    }
+    const workers = await prisma.worker.findMany({
+      where: { workerType: type as any, isActive: true },
+      orderBy: { reputation: 'desc' },
+      take: 100,
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch workers by type' });
+  }
+});
