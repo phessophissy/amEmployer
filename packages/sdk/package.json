@@ -1,0 +1,9 @@
+{
+  "name": "@amemployer/sdk",
+  "version": "0.1.0",
+  "description": "amEmployer SDK utility helpers",
+  "main": "src/index.ts",
+  "scripts": { "build": "tsup src/index.ts --format cjs,esm --dts" },
+  "devDependencies": { "tsup": "^8.0.0", "typescript": "^5.0.0" },
+  "peerDependencies": { "ethers": "^6.0.0" }
+}
