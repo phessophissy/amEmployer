@@ -226,3 +226,21 @@ router.get('/:id/stats', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch simulation stats' });
   }
 });
+
+// ─── GET /api/simulation/:id/top-earners ──────────────────────────────────
+router.get('/:id/top-earners', async (req: Request, res: Response) => {
+  try {
+    const { limit = '10' } = req.query;
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    const wallets = await prisma.simulationWallet.findMany({
+      where: { simulationRunId: sim.id },
+      orderBy: { earnings: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      select: { address: true, earnings: true, completedTasks: true, workerType: true },
+    });
+    res.json({ success: true, data: wallets });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch top earners' });
+  }
+});
