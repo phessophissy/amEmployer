@@ -150,3 +150,17 @@ router.get('/:id/ai-logs', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/jobs/active ──────────────────────────────────────────────────
+router.get('/active', async (_req: Request, res: Response) => {
+  try {
+    const jobs = await prisma.job.findMany({
+      where: { status: 'ACTIVE' },
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { tasks: true } } },
+    });
+    res.json({ success: true, data: jobs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch active jobs' });
+  }
+});
