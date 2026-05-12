@@ -58,3 +58,17 @@ router.get('/errors', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch error logs' });
   }
 });
+
+// ─── GET /api/ai-logs/stats ───────────────────────────────────────────────
+router.get('/stats', async (_req: Request, res: Response) => {
+  try {
+    const counts = await prisma.aILog.groupBy({
+      by: ['logType'],
+      _count: { logType: true },
+    });
+    const data = Object.fromEntries(counts.map((c) => [c.logType, c._count.logType]));
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch AI log stats' });
+  }
+});
