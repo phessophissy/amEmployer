@@ -27,3 +27,18 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/ai-logs/recent ──────────────────────────────────────────────
+router.get('/recent', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const logs = await prisma.aILog.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+      include: { job: { select: { title: true } } },
+    });
+    res.json({ success: true, data: logs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch recent AI logs' });
+  }
+});
