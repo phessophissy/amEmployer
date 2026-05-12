@@ -70,5 +70,5 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error', message: err.message });
 });
 
-app.use('/api/ai-logs', aiLogsRouter);
+app.use('/api/payments', paymentsRouter);
 export default app;
