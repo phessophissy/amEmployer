@@ -119,3 +119,22 @@ router.get('/search', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Search failed' });
   }
 });
+
+// ─── GET /api/workers/top-earners ─────────────────────────────────────────
+router.get('/top-earners', async (req: Request, res: Response) => {
+  try {
+    const { limit = '10' } = req.query;
+    const workers = await prisma.worker.findMany({
+      where: { isActive: true },
+      orderBy: { totalEarnings: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      select: {
+        walletAddress: true, personaName: true, totalEarnings: true,
+        reputation: true, completedTasks: true, workerType: true,
+      },
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch top earners' });
+  }
+});
