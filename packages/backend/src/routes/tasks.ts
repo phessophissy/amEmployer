@@ -177,3 +177,20 @@ router.get('/recent-completions', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch recent completions' });
   }
 });
+
+// ─── GET /api/tasks/:id/history ────────────────────────────────────────────
+router.get('/:id/history', async (req: Request, res: Response) => {
+  try {
+    const task = await prisma.task.findUnique({
+      where: { id: String(req.params.id) },
+      include: {
+        payments: { orderBy: { createdAt: 'asc' } },
+        job: { select: { title: true, employerAddress: true } },
+      },
+    });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json({ success: true, data: task });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch task history' });
+  }
+});
