@@ -151,3 +151,96 @@ router.get('/queues/stats', async (_req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/simulation/summary ──────────────────────────────────────────
+router.get('/summary', async (_req: Request, res: Response) => {
+  try {
+    const sims = await prisma.simulationRun.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: { id: true, name: true, status: true, walletCount: true, createdAt: true },
+    });
+    res.json({ success: true, data: sims });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation summary' });
+  }
+});
+
+// ─── GET /api/simulation/:id/wallets ─────────────────────────────────────
+router.get('/:id/wallets', async (req: Request, res: Response) => {
+  try {
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    const wallets = await prisma.simulationWallet.findMany({
+      where: { simulationRunId: sim.id },
+      orderBy: { earnings: 'desc' },
+      take: 100,
+    });
+    res.json({ success: true, data: wallets });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation wallets' });
+  }
+});
+
+// ─── POST /api/simulation/:id/stop ────────────────────────────────────────
+router.post('/:id/stop', async (req: Request, res: Response) => {
+  try {
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    if (sim.status !== 'RUNNING') {
+      return res.status(400).json({ error: `Cannot stop simulation with status: ${sim.status}` });
+    }
+    const updated = await prisma.simulationRun.update({
+      where: { id: sim.id },
+      data: { status: 'PAUSED' },
+    });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to stop simulation' });
+  }
+});
+
+// ─── GET /api/simulation/:id/stats ────────────────────────────────────────
+router.get('/:id/stats', async (req: Request, res: Response) => {
+  try {
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    const wallets = await prisma.simulationWallet.findMany({
+      where: { simulationRunId: sim.id },
+      select: { earnings: true, completedTasks: true },
+    });
+    const totalEarnings = wallets.reduce((s, w) => s + Number(w.earnings), 0);
+    const totalTasks = wallets.reduce((s, w) => s + w.completedTasks, 0);
+    const avgEarnings = wallets.length > 0 ? totalEarnings / wallets.length : 0;
+    res.json({
+      success: true,
+      data: {
+        id: sim.id, status: sim.status,
+        walletCount: wallets.length,
+        totalEarnings: totalEarnings.toFixed(18),
+        avgEarnings: avgEarnings.toFixed(18),
+        totalTasks,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation stats' });
+  }
+});
+
+// ─── GET /api/simulation/:id/top-earners ──────────────────────────────────
+router.get('/:id/top-earners', async (req: Request, res: Response) => {
+  try {
+    const { limit = '10' } = req.query;
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    const wallets = await prisma.simulationWallet.findMany({
+      where: { simulationRunId: sim.id },
+      orderBy: { earnings: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      select: { address: true, earnings: true, completedTasks: true, workerType: true },
+    });
+    res.json({ success: true, data: wallets });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch top earners' });
+  }
+});

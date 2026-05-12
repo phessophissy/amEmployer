@@ -96,3 +96,101 @@ router.post('/register', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/workers/search ──────────────────────────────────────────────
+router.get('/search', async (req: Request, res: Response) => {
+  try {
+    const { q, limit = '20' } = req.query;
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({ error: 'Missing query param: q' });
+    }
+    const workers = await prisma.worker.findMany({
+      where: {
+        OR: [
+          { walletAddress: { contains: q, mode: 'insensitive' } },
+          { personaName: { contains: q, mode: 'insensitive' } },
+        ],
+      },
+      take: Math.min(parseInt(String(limit)), 50),
+      orderBy: { reputation: 'desc' },
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Search failed' });
+  }
+});
+
+// ─── GET /api/workers/top-earners ─────────────────────────────────────────
+router.get('/top-earners', async (req: Request, res: Response) => {
+  try {
+    const { limit = '10' } = req.query;
+    const workers = await prisma.worker.findMany({
+      where: { isActive: true },
+      orderBy: { totalEarnings: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      select: {
+        walletAddress: true, personaName: true, totalEarnings: true,
+        reputation: true, completedTasks: true, workerType: true,
+      },
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch top earners' });
+  }
+});
+
+// ─── GET /api/workers/by-type/:type ───────────────────────────────────────
+router.get('/by-type/:type', async (req: Request, res: Response) => {
+  try {
+    const validTypes = ['HUMAN', 'SCRIPTED', 'AI_AGENT'];
+    const type = String(req.params.type).toUpperCase();
+    if (!validTypes.includes(type)) {
+      return res.status(400).json({ error: `Invalid type. Must be one of: ${validTypes.join(', ')}` });
+    }
+    const workers = await prisma.worker.findMany({
+      where: { workerType: type as any, isActive: true },
+      orderBy: { reputation: 'desc' },
+      take: 100,
+    });
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch workers by type' });
+  }
+});
+
+// ─── GET /api/workers/:address/tasks ──────────────────────────────────────
+router.get('/:address/tasks', async (req: Request, res: Response) => {
+  try {
+    const { status, limit = '20' } = req.query;
+    const where: Record<string, unknown> = { assignedWorker: String(req.params.address) };
+    if (status) where.status = String(status);
+    const tasks = await prisma.task.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+      include: { job: { select: { title: true } } },
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch worker tasks' });
+  }
+});
+
+// ─── GET /api/workers/:address/earnings ───────────────────────────────────
+router.get('/:address/earnings', async (req: Request, res: Response) => {
+  try {
+    const worker = await prisma.worker.findUnique({
+      where: { walletAddress: String(req.params.address) },
+    });
+    if (!worker) return res.status(404).json({ error: 'Worker not found' });
+    const payments = await prisma.payment.findMany({
+      where: { workerId: worker.id, status: 'CONFIRMED' },
+      orderBy: { createdAt: 'desc' },
+      select: { amount: true, createdAt: true, txHash: true },
+    });
+    const total = payments.reduce((s, p) => s + Number(p.amount), 0);
+    res.json({ success: true, data: { total: total.toFixed(18), payments } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch earnings' });
+  }
+});

@@ -150,3 +150,99 @@ router.get('/:id/ai-logs', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/jobs/active ──────────────────────────────────────────────────
+router.get('/active', async (_req: Request, res: Response) => {
+  try {
+    const jobs = await prisma.job.findMany({
+      where: { status: 'ACTIVE' },
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { tasks: true } } },
+    });
+    res.json({ success: true, data: jobs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch active jobs' });
+  }
+});
+
+// ─── GET /api/jobs/:id/stats ───────────────────────────────────────────────
+router.get('/:id/stats', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const job = await prisma.job.findUnique({ where: { id: jobId } });
+    if (!job) return res.status(404).json({ error: 'Job not found' });
+    const taskCounts = await prisma.task.groupBy({
+      by: ['status'],
+      where: { jobId },
+      _count: { status: true },
+    });
+    const tasksByStatus = Object.fromEntries(
+      taskCounts.map((t) => [t.status, t._count.status])
+    );
+    res.json({ success: true, data: { jobId, tasksByStatus } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job stats' });
+  }
+});
+
+// ─── GET /api/jobs/:id/payments ────────────────────────────────────────────
+router.get('/:id/payments', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const payments = await prisma.payment.findMany({
+      where: { task: { jobId } },
+      include: {
+        task: { select: { title: true, reward: true } },
+        worker: { select: { walletAddress: true, personaName: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    const total = payments.reduce((s, p) => s + Number(p.amount), 0);
+    res.json({ success: true, data: { payments, totalPaid: total.toFixed(18) } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job payments' });
+  }
+});
+
+// ─── GET /api/jobs/:id/workers ─────────────────────────────────────────────
+router.get('/:id/workers', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const tasks = await prisma.task.findMany({
+      where: { jobId, assignedWorker: { not: null } },
+      select: { assignedWorker: true, status: true, validationScore: true },
+    });
+    const workerMap = new Map<string, { tasks: number; totalScore: number }>();
+    for (const t of tasks) {
+      if (!t.assignedWorker) continue;
+      const e = workerMap.get(t.assignedWorker) ?? { tasks: 0, totalScore: 0 };
+      e.tasks++;
+      if (t.validationScore) e.totalScore += t.validationScore;
+      workerMap.set(t.assignedWorker, e);
+    }
+    const workers = Array.from(workerMap.entries()).map(([address, s]) => ({
+      address,
+      taskCount: s.tasks,
+      avgScore: s.tasks > 0 ? (s.totalScore / s.tasks).toFixed(2) : '0.00',
+    }));
+    res.json({ success: true, data: workers });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch job workers' });
+  }
+});
+
+// ─── GET /api/jobs/:id/completion-rate ────────────────────────────────────
+router.get('/:id/completion-rate', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const [total, paid, rejected] = await Promise.all([
+      prisma.task.count({ where: { jobId } }),
+      prisma.task.count({ where: { jobId, status: 'PAID' } }),
+      prisma.task.count({ where: { jobId, status: 'REJECTED' } }),
+    ]);
+    const rate = total > 0 ? ((paid / total) * 100).toFixed(1) : '0.0';
+    res.json({ success: true, data: { total, paid, rejected, completionRate: `${rate}%` } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to calculate completion rate' });
+  }
+});
