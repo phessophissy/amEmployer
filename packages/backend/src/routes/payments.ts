@@ -33,3 +33,25 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/payments/summary ─────────────────────────────────────────────
+router.get('/summary', async (_req: Request, res: Response) => {
+  try {
+    const [total, confirmed, pending, failed, agg] = await Promise.all([
+      prisma.payment.count(),
+      prisma.payment.count({ where: { status: 'CONFIRMED' } }),
+      prisma.payment.count({ where: { status: 'PENDING' } }),
+      prisma.payment.count({ where: { status: 'FAILED' } }),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'CONFIRMED' } }),
+    ]);
+    res.json({
+      success: true,
+      data: {
+        total, confirmed, pending, failed,
+        totalAmountPaid: (Number(agg._sum.amount) ?? 0).toFixed(18),
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch payment summary' });
+  }
+});
