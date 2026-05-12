@@ -8,7 +8,7 @@ import tasksRouter from './routes/tasks';
 import workersRouter from './routes/workers';
 import simulationRouter from './routes/simulation';
 import statsRouter from './routes/stats';
-import paymentsRouter from './routes/payments';
+import healthRouter from './routes/health';
 
 const app = express();
 
@@ -57,6 +57,7 @@ app.use('/api/tasks', tasksRouter);
 app.use('/api/workers', workersRouter);
 app.use('/api/simulation', simulationRouter);
 app.use('/api/stats', statsRouter);
+app.use('/health', healthRouter);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
