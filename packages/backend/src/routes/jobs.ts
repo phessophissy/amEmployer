@@ -230,3 +230,19 @@ router.get('/:id/workers', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch job workers' });
   }
 });
+
+// ─── GET /api/jobs/:id/completion-rate ────────────────────────────────────
+router.get('/:id/completion-rate', async (req: Request, res: Response) => {
+  try {
+    const jobId = String(req.params.id);
+    const [total, paid, rejected] = await Promise.all([
+      prisma.task.count({ where: { jobId } }),
+      prisma.task.count({ where: { jobId, status: 'PAID' } }),
+      prisma.task.count({ where: { jobId, status: 'REJECTED' } }),
+    ]);
+    const rate = total > 0 ? ((paid / total) * 100).toFixed(1) : '0.0';
+    res.json({ success: true, data: { total, paid, rejected, completionRate: `${rate}%` } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to calculate completion rate' });
+  }
+});
