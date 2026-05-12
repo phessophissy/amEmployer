@@ -158,3 +158,22 @@ router.get('/expiring-soon', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch expiring tasks' });
   }
 });
+
+// ─── GET /api/tasks/recent-completions ────────────────────────────────────
+router.get('/recent-completions', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const tasks = await prisma.task.findMany({
+      where: { status: 'PAID' },
+      orderBy: { updatedAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      include: {
+        job: { select: { title: true } },
+        payments: { select: { txHash: true, amount: true } },
+      },
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch recent completions' });
+  }
+});
