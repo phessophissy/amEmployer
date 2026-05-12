@@ -165,3 +165,19 @@ router.get('/summary', async (_req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch simulation summary' });
   }
 });
+
+// ─── GET /api/simulation/:id/wallets ─────────────────────────────────────
+router.get('/:id/wallets', async (req: Request, res: Response) => {
+  try {
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    const wallets = await prisma.simulationWallet.findMany({
+      where: { simulationRunId: sim.id },
+      orderBy: { earnings: 'desc' },
+      take: 100,
+    });
+    res.json({ success: true, data: wallets });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation wallets' });
+  }
+});
