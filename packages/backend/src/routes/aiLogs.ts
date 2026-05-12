@@ -42,3 +42,19 @@ router.get('/recent', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch recent AI logs' });
   }
 });
+
+// ─── GET /api/ai-logs/errors ──────────────────────────────────────────────
+router.get('/errors', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const logs = await prisma.aILog.findMany({
+      where: { logType: 'ERROR' },
+      orderBy: { createdAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+      include: { job: { select: { title: true } } },
+    });
+    res.json({ success: true, data: logs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch error logs' });
+  }
+});
