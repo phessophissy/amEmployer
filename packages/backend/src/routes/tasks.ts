@@ -139,3 +139,22 @@ router.get('/high-reward', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch high-reward tasks' });
   }
 });
+
+// ─── GET /api/tasks/expiring-soon ─────────────────────────────────────────
+router.get('/expiring-soon', async (req: Request, res: Response) => {
+  try {
+    const { hours = '24' } = req.query;
+    const cutoff = new Date(Date.now() + parseInt(String(hours)) * 3_600_000);
+    const tasks = await prisma.task.findMany({
+      where: {
+        status: { in: ['OPEN', 'ASSIGNED'] },
+        deadline: { lte: cutoff, gte: new Date() },
+      },
+      orderBy: { deadline: 'asc' },
+      take: 50,
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch expiring tasks' });
+  }
+});
