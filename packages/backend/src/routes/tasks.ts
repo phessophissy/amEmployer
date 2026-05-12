@@ -124,3 +124,18 @@ router.get('/stats', async (_req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch task stats' });
   }
 });
+
+// ─── GET /api/tasks/high-reward ────────────────────────────────────────────
+router.get('/high-reward', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const tasks = await prisma.task.findMany({
+      where: { status: 'OPEN' },
+      orderBy: { reward: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch high-reward tasks' });
+  }
+});
