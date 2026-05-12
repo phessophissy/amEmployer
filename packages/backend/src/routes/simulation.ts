@@ -151,3 +151,17 @@ router.get('/queues/stats', async (_req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/simulation/summary ──────────────────────────────────────────
+router.get('/summary', async (_req: Request, res: Response) => {
+  try {
+    const sims = await prisma.simulationRun.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: { id: true, name: true, status: true, walletCount: true, createdAt: true },
+    });
+    res.json({ success: true, data: sims });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation summary' });
+  }
+});
