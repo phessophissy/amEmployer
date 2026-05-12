@@ -181,3 +181,21 @@ router.get('/:id/wallets', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch simulation wallets' });
   }
 });
+
+// ─── POST /api/simulation/:id/stop ────────────────────────────────────────
+router.post('/:id/stop', async (req: Request, res: Response) => {
+  try {
+    const sim = await prisma.simulationRun.findUnique({ where: { id: String(req.params.id) } });
+    if (!sim) return res.status(404).json({ error: 'Simulation not found' });
+    if (sim.status !== 'RUNNING') {
+      return res.status(400).json({ error: `Cannot stop simulation with status: ${sim.status}` });
+    }
+    const updated = await prisma.simulationRun.update({
+      where: { id: sim.id },
+      data: { status: 'PAUSED' },
+    });
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to stop simulation' });
+  }
+});
