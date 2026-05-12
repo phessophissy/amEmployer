@@ -55,3 +55,25 @@ router.get('/summary', async (_req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch payment summary' });
   }
 });
+
+// ─── GET /api/payments/daily ───────────────────────────────────────────────
+router.get('/daily', async (req: Request, res: Response) => {
+  try {
+    const { days = '7' } = req.query;
+    const since = new Date(Date.now() - parseInt(String(days)) * 86_400_000);
+    const payments = await prisma.payment.findMany({
+      where: { status: 'CONFIRMED', createdAt: { gte: since } },
+      select: { amount: true, createdAt: true },
+      orderBy: { createdAt: 'asc' },
+    });
+    const daily = new Map<string, number>();
+    for (const p of payments) {
+      const day = p.createdAt.toISOString().slice(0, 10);
+      daily.set(day, (daily.get(day) ?? 0) + Number(p.amount));
+    }
+    const data = Array.from(daily.entries()).map(([date, amount]) => ({ date, amount }));
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch daily payments' });
+  }
+});
