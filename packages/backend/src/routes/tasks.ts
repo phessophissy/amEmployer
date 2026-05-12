@@ -107,3 +107,90 @@ router.post('/:id/assign', async (req: Request, res: Response) => {
 });
 
 export default router;
+
+// ─── GET /api/tasks/stats ──────────────────────────────────────────────────
+router.get('/stats', async (_req: Request, res: Response) => {
+  try {
+    const [open, assigned, submitted, verified, paid, rejected] = await Promise.all([
+      prisma.task.count({ where: { status: 'OPEN' } }),
+      prisma.task.count({ where: { status: 'ASSIGNED' } }),
+      prisma.task.count({ where: { status: 'SUBMITTED' } }),
+      prisma.task.count({ where: { status: 'VERIFIED' } }),
+      prisma.task.count({ where: { status: 'PAID' } }),
+      prisma.task.count({ where: { status: 'REJECTED' } }),
+    ]);
+    res.json({ success: true, data: { open, assigned, submitted, verified, paid, rejected } });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch task stats' });
+  }
+});
+
+// ─── GET /api/tasks/high-reward ────────────────────────────────────────────
+router.get('/high-reward', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const tasks = await prisma.task.findMany({
+      where: { status: 'OPEN' },
+      orderBy: { reward: 'desc' },
+      take: Math.min(parseInt(String(limit)), 100),
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch high-reward tasks' });
+  }
+});
+
+// ─── GET /api/tasks/expiring-soon ─────────────────────────────────────────
+router.get('/expiring-soon', async (req: Request, res: Response) => {
+  try {
+    const { hours = '24' } = req.query;
+    const cutoff = new Date(Date.now() + parseInt(String(hours)) * 3_600_000);
+    const tasks = await prisma.task.findMany({
+      where: {
+        status: { in: ['OPEN', 'ASSIGNED'] },
+        deadline: { lte: cutoff, gte: new Date() },
+      },
+      orderBy: { deadline: 'asc' },
+      take: 50,
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch expiring tasks' });
+  }
+});
+
+// ─── GET /api/tasks/recent-completions ────────────────────────────────────
+router.get('/recent-completions', async (req: Request, res: Response) => {
+  try {
+    const { limit = '20' } = req.query;
+    const tasks = await prisma.task.findMany({
+      where: { status: 'PAID' },
+      orderBy: { updatedAt: 'desc' },
+      take: Math.min(parseInt(String(limit)), 50),
+      include: {
+        job: { select: { title: true } },
+        payments: { select: { txHash: true, amount: true } },
+      },
+    });
+    res.json({ success: true, data: tasks });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch recent completions' });
+  }
+});
+
+// ─── GET /api/tasks/:id/history ────────────────────────────────────────────
+router.get('/:id/history', async (req: Request, res: Response) => {
+  try {
+    const task = await prisma.task.findUnique({
+      where: { id: String(req.params.id) },
+      include: {
+        payments: { orderBy: { createdAt: 'asc' } },
+        job: { select: { title: true, employerAddress: true } },
+      },
+    });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json({ success: true, data: task });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch task history' });
+  }
+});
