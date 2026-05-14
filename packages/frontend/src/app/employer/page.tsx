@@ -29,7 +29,7 @@ interface Stats {
 }
 
 export default function EmployerPage() {
-  const { address: walletAddress, isConnected, connect } = useWalletContext();
+  const { address: walletAddress, isConnected, isLoading, connect } = useWalletContext();
 
   // Wallet gate — must connect before accessing employer dashboard
   if (!isConnected) return (
@@ -47,9 +47,10 @@ export default function EmployerPage() {
       </p>
       <button
         onClick={connect}
-        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold rounded-xl transition-colors touch-manipulation"
+        disabled={isLoading}
+        className="w-full px-6 py-3 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-semibold rounded-xl transition-colors touch-manipulation disabled:opacity-60 disabled:cursor-not-allowed"
       >
-        Connect Wallet
+        {isLoading ? 'Connecting...' : 'Connect Wallet'}
       </button>
     </div>
   );

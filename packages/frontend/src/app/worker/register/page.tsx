@@ -7,7 +7,7 @@ import { api } from '@/lib/api';
 
 export default function WorkerRegisterPage() {
   const router = useRouter();
-  const { address, isConnected, connect } = useWalletContext();
+  const { address, isConnected, isLoading, connect } = useWalletContext();
   const [personaName, setPersonaName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -17,8 +17,12 @@ export default function WorkerRegisterPage() {
     <div className="max-w-sm mx-auto px-4 py-16 text-center">
       <div className="text-5xl mb-4">🔧</div>
       <p className="text-slate-400 mb-6">Connect your wallet to register as a worker and start earning cUSD</p>
-      <button onClick={connect} className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors">
-        Connect Wallet
+      <button
+        onClick={connect}
+        disabled={isLoading}
+        className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+      >
+        {isLoading ? 'Connecting...' : 'Connect Wallet'}
       </button>
     </div>
   );

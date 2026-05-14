@@ -20,7 +20,7 @@ const STATS = [
 ];
 
 export default function HomePage() {
-  const { isConnected, isMiniPayEnv } = useWalletContext();
+  const { isConnected, isMiniPayEnv, isLoading, connect } = useWalletContext();
   return (
     <div className="relative overflow-x-hidden">
       <div className="pointer-events-none absolute top-20 left-0 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl -translate-x-1/2" />
@@ -56,6 +56,28 @@ export default function HomePage() {
               Worker View
             </Link>
           </div>
+
+          {!isConnected && (
+            <div className="mx-auto mb-10 max-w-xl rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+              <p className="text-xs font-mono text-slate-300 mb-3">
+                Connect a wallet to start posting jobs and paying workers on Celo.
+              </p>
+              <button
+                onClick={connect}
+                disabled={isLoading}
+                className="w-full sm:w-auto px-5 py-2.5 rounded-lg bg-emerald-500 text-black font-semibold hover:bg-emerald-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isLoading ? 'Connecting...' : 'Connect Wallet'}
+              </button>
+            </div>
+          )}
+
+          {isConnected && (
+            <p className="mb-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-mono text-emerald-400">
+              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              Wallet connected
+            </p>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-12">

@@ -22,7 +22,7 @@ export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { address, balance, isConnected, isMiniPayEnv, isWrongNetwork, connect } = useWalletContext();
+  const { address, balance, isConnected, isWrongNetwork, isLoading, connect } = useWalletContext();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 4);
@@ -76,14 +76,13 @@ export function Navbar() {
               </span>
             </div>
           ) : (
-            !isMiniPayEnv && (
-              <button
-                onClick={connect}
-                className="px-3 py-1.5 text-xs font-mono rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-all"
-              >
-                Connect
-              </button>
-            )
+            <button
+              onClick={connect}
+              disabled={isLoading}
+              className="px-3 py-1.5 text-xs font-mono rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {isLoading ? 'Connecting...' : 'Connect'}
+            </button>
           )}
           <button
             className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition-all"

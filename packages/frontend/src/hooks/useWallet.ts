@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
 import { isMiniPay, getConnectedAddress, fetchCUSDBalance } from '@/lib/minipay';
+import { useToast } from '@/hooks/useToast';
 
 export interface WalletState {
   address: `0x${string}` | null;
@@ -63,20 +64,36 @@ export function useWallet(): WalletState {
   const switchToCelo = ensureCeloNetwork;
 
   const connect = useCallback(async () => {
+    setIsLoading(true);
     try {
-      if (typeof window === 'undefined' || !window.ethereum) return;
+      if (typeof window === 'undefined') return;
+      if (!window.ethereum) {
+        useToast.getState().warning(
+          'Open this app in MiniPay or install a browser wallet like MetaMask.',
+          'Wallet Not Found'
+        );
+        return;
+      }
       // Request accounts (triggers MetaMask/MiniPay popup if not already connected)
-      await (window.ethereum as any).request({ method: 'eth_requestAccounts' });
+      const accounts: string[] = await (window.ethereum as any).request({ method: 'eth_requestAccounts' });
       // MiniPay is always on Celo; only switch for external wallets
       if (!isMiniPay()) await ensureCeloNetwork();
-      const addr = await getConnectedAddress();
-      setAddress(addr);
-      if (addr) {
-        const bal = await fetchCUSDBalance(addr);
-        setBalance(bal);
+      const addr = (accounts[0] as `0x${string}` | undefined) ?? await getConnectedAddress();
+      if (!addr) {
+        useToast.getState().warning('No account returned by wallet provider.', 'Connection Incomplete');
+        return;
       }
-    } catch {
-      // User rejected — that's fine
+      setAddress(addr);
+      const bal = await fetchCUSDBalance(addr);
+      setBalance(bal);
+    } catch (error: any) {
+      if (error?.code === 4001) {
+        useToast.getState().info('Connection request was cancelled.', 'Request Cancelled');
+        return;
+      }
+      useToast.getState().error(error?.message || 'Could not connect wallet. Please try again.', 'Connection Failed');
+    } finally {
+      setIsLoading(false);
     }
   }, [ensureCeloNetwork]);
 
