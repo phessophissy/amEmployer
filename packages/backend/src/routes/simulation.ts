@@ -124,6 +124,30 @@ router.get('/', async (_req: Request, res: Response) => {
   }
 });
 
+// ─── GET /api/simulation/queues/stats ──────────────────────────────────────────
+router.get('/queues/stats', async (_req: Request, res: Response) => {
+  try {
+    const stats = await getQueueStats();
+    res.json({ success: true, data: stats });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch queue stats' });
+  }
+});
+
+// ─── GET /api/simulation/summary ──────────────────────────────────────────
+router.get('/summary', async (_req: Request, res: Response) => {
+  try {
+    const sims = await prisma.simulationRun.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+      select: { id: true, name: true, status: true, walletCount: true, createdAt: true },
+    });
+    res.json({ success: true, data: sims });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch simulation summary' });
+  }
+});
+
 // ─── GET /api/simulation/:id ───────────────────────────────────────────────────
 router.get('/:id', async (req: Request, res: Response) => {
   try {
@@ -137,32 +161,6 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.json({ success: true, data: sim });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch simulation' });
-  }
-});
-
-// ─── GET /api/simulation/queues/stats ──────────────────────────────────────────
-router.get('/queues/stats', async (_req: Request, res: Response) => {
-  try {
-    const stats = await getQueueStats();
-    res.json({ success: true, data: stats });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch queue stats' });
-  }
-});
-
-export default router;
-
-// ─── GET /api/simulation/summary ──────────────────────────────────────────
-router.get('/summary', async (_req: Request, res: Response) => {
-  try {
-    const sims = await prisma.simulationRun.findMany({
-      orderBy: { createdAt: 'desc' },
-      take: 10,
-      select: { id: true, name: true, status: true, walletCount: true, createdAt: true },
-    });
-    res.json({ success: true, data: sims });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch simulation summary' });
   }
 });
 
@@ -244,3 +242,5 @@ router.get('/:id/top-earners', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch top earners' });
   }
 });
+
+export default router;

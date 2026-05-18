@@ -45,69 +45,6 @@ router.get('/open', async (_req: Request, res: Response) => {
   }
 });
 
-// ─── GET /api/tasks/:id ─────────────────────────────────────────────────────────
-router.get('/:id', async (req: Request, res: Response) => {
-  try {
-    const task = await prisma.task.findUnique({
-      where: { id: String(req.params.id) },
-      include: { job: true, payments: true },
-    });
-    if (!task) return res.status(404).json({ error: 'Task not found' });
-    res.json({ success: true, data: task });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch task' });
-  }
-});
-
-// ─── POST /api/tasks/:id/submit ─────────────────────────────────────────────────
-const SubmitWorkSchema = z.object({
-  submission: z.string().min(1).max(10000),
-  workerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
-});
-
-router.post('/:id/submit', async (req: Request, res: Response) => {
-  try {
-    const body = SubmitWorkSchema.parse(req.body);
-    const taskId = String(req.params.id);
-
-    const task = await prisma.task.findUnique({ where: { id: taskId } });
-    if (!task) return res.status(404).json({ error: 'Task not found' });
-    if (task.status !== 'ASSIGNED') {
-      return res.status(400).json({ error: 'Task not in ASSIGNED state' });
-    }
-    if (task.assignedWorker !== body.workerAddress) {
-      return res.status(403).json({ error: 'Not assigned to this worker' });
-    }
-
-    await prisma.task.update({
-      where: { id: taskId },
-      data: { status: 'SUBMITTED', submission: body.submission },
-    });
-
-    await validationQueue.add('validate', { taskId });
-
-    res.json({ success: true, message: 'Submission received — validation queued' });
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      return res.status(400).json({ error: 'Validation failed', details: err.errors });
-    }
-    res.status(500).json({ error: 'Failed to submit work' });
-  }
-});
-
-// ─── POST /api/tasks/:id/assign ─────────────────────────────────────────────────
-router.post('/:id/assign', async (req: Request, res: Response) => {
-  try {
-    const taskId = req.params.id;
-    await assignmentQueue.add('assign', { taskId }, { priority: 1 });
-    res.json({ success: true, message: 'Task queued for assignment' });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to queue assignment' });
-  }
-});
-
-export default router;
-
 // ─── GET /api/tasks/stats ──────────────────────────────────────────────────
 router.get('/stats', async (_req: Request, res: Response) => {
   try {
@@ -178,6 +115,67 @@ router.get('/recent-completions', async (req: Request, res: Response) => {
   }
 });
 
+// ─── GET /api/tasks/:id ─────────────────────────────────────────────────────────
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const task = await prisma.task.findUnique({
+      where: { id: String(req.params.id) },
+      include: { job: true, payments: true },
+    });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    res.json({ success: true, data: task });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch task' });
+  }
+});
+
+// ─── POST /api/tasks/:id/submit ─────────────────────────────────────────────────
+const SubmitWorkSchema = z.object({
+  submission: z.string().min(1).max(10000),
+  workerAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+});
+
+router.post('/:id/submit', async (req: Request, res: Response) => {
+  try {
+    const body = SubmitWorkSchema.parse(req.body);
+    const taskId = String(req.params.id);
+
+    const task = await prisma.task.findUnique({ where: { id: taskId } });
+    if (!task) return res.status(404).json({ error: 'Task not found' });
+    if (task.status !== 'ASSIGNED') {
+      return res.status(400).json({ error: 'Task not in ASSIGNED state' });
+    }
+    if (task.assignedWorker !== body.workerAddress) {
+      return res.status(403).json({ error: 'Not assigned to this worker' });
+    }
+
+    await prisma.task.update({
+      where: { id: taskId },
+      data: { status: 'SUBMITTED', submission: body.submission },
+    });
+
+    await validationQueue.add('validate', { taskId });
+
+    res.json({ success: true, message: 'Submission received — validation queued' });
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ error: 'Validation failed', details: err.errors });
+    }
+    res.status(500).json({ error: 'Failed to submit work' });
+  }
+});
+
+// ─── POST /api/tasks/:id/assign ─────────────────────────────────────────────────
+router.post('/:id/assign', async (req: Request, res: Response) => {
+  try {
+    const taskId = req.params.id;
+    await assignmentQueue.add('assign', { taskId }, { priority: 1 });
+    res.json({ success: true, message: 'Task queued for assignment' });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to queue assignment' });
+  }
+});
+
 // ─── GET /api/tasks/:id/history ────────────────────────────────────────────
 router.get('/:id/history', async (req: Request, res: Response) => {
   try {
@@ -194,3 +192,5 @@ router.get('/:id/history', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch task history' });
   }
 });
+
+export default router;

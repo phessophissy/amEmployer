@@ -41,6 +41,20 @@ router.get('/', async (req: Request, res: Response) => {
   }
 });
 
+// ─── GET /api/jobs/active ──────────────────────────────────────────────────
+router.get('/active', async (_req: Request, res: Response) => {
+  try {
+    const jobs = await prisma.job.findMany({
+      where: { status: 'ACTIVE' },
+      orderBy: { createdAt: 'desc' },
+      include: { _count: { select: { tasks: true } } },
+    });
+    res.json({ success: true, data: jobs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch active jobs' });
+  }
+});
+
 // ─── GET /api/jobs/:id ─────────────────────────────────────────────────────────
 router.get('/:id', async (req: Request, res: Response) => {
   try {
@@ -149,22 +163,6 @@ router.get('/:id/ai-logs', async (req: Request, res: Response) => {
   }
 });
 
-export default router;
-
-// ─── GET /api/jobs/active ──────────────────────────────────────────────────
-router.get('/active', async (_req: Request, res: Response) => {
-  try {
-    const jobs = await prisma.job.findMany({
-      where: { status: 'ACTIVE' },
-      orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { tasks: true } } },
-    });
-    res.json({ success: true, data: jobs });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch active jobs' });
-  }
-});
-
 // ─── GET /api/jobs/:id/stats ───────────────────────────────────────────────
 router.get('/:id/stats', async (req: Request, res: Response) => {
   try {
@@ -246,3 +244,5 @@ router.get('/:id/completion-rate', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to calculate completion rate' });
   }
 });
+
+export default router;

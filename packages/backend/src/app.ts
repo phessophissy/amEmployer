@@ -9,6 +9,7 @@ import workersRouter from './routes/workers';
 import simulationRouter from './routes/simulation';
 import statsRouter from './routes/stats';
 import healthRouter from './routes/health';
+import paymentsRouter from './routes/payments';
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use('/api/workers', workersRouter);
 app.use('/api/simulation', simulationRouter);
 app.use('/api/stats', statsRouter);
 app.use('/health', healthRouter);
+app.use('/api/payments', paymentsRouter);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
@@ -70,5 +72,4 @@ app.use((err: Error, _req: express.Request, res: express.Response, _next: expres
   res.status(500).json({ error: 'Internal server error', message: err.message });
 });
 
-app.use('/api/payments', paymentsRouter);
 export default app;

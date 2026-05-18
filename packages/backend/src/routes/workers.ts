@@ -39,26 +39,6 @@ router.get('/leaderboard', async (_req: Request, res: Response) => {
   }
 });
 
-// ─── GET /api/workers/:address ──────────────────────────────────────────────────
-router.get('/:address', async (req: Request, res: Response) => {
-  try {
-    const worker = await prisma.worker.findUnique({
-      where: { walletAddress: String(req.params.address) },
-      include: {
-        payments: {
-          orderBy: { createdAt: 'desc' },
-          take: 20,
-          include: { task: { select: { title: true } } },
-        },
-      },
-    });
-    if (!worker) return res.status(404).json({ error: 'Worker not found' });
-    res.json({ success: true, data: worker });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch worker' });
-  }
-});
-
 // ─── POST /api/workers/register ────────────────────────────────────────────────
 const RegisterWorkerSchema = z.object({
   walletAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
@@ -94,8 +74,6 @@ router.post('/register', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to register worker' });
   }
 });
-
-export default router;
 
 // ─── GET /api/workers/search ──────────────────────────────────────────────
 router.get('/search', async (req: Request, res: Response) => {
@@ -158,6 +136,26 @@ router.get('/by-type/:type', async (req: Request, res: Response) => {
   }
 });
 
+// ─── GET /api/workers/:address ──────────────────────────────────────────────────
+router.get('/:address', async (req: Request, res: Response) => {
+  try {
+    const worker = await prisma.worker.findUnique({
+      where: { walletAddress: String(req.params.address) },
+      include: {
+        payments: {
+          orderBy: { createdAt: 'desc' },
+          take: 20,
+          include: { task: { select: { title: true } } },
+        },
+      },
+    });
+    if (!worker) return res.status(404).json({ error: 'Worker not found' });
+    res.json({ success: true, data: worker });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch worker' });
+  }
+});
+
 // ─── GET /api/workers/:address/tasks ──────────────────────────────────────
 router.get('/:address/tasks', async (req: Request, res: Response) => {
   try {
@@ -194,3 +192,5 @@ router.get('/:address/earnings', async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Failed to fetch earnings' });
   }
 });
+
+export default router;
