@@ -41,9 +41,20 @@ packages/contracts/*_flat.sol
 # packages/contracts/deployments/  ← keep for reference
 
 # ─── Simulation data ─────────────────────────────────────────────────────────
-# NEVER commit generated wallets
+# NEVER commit generated wallets or batch wallet outputs
 packages/simulation/data/
 packages/simulation/dist/
+wallets.json
+wallets_125.json
+**/wallets*.json
+!**/wallets*.example.json
+
+# ─── Local build / dev artifacts ─────────────────────────────────────────────
+packages/frontend/build_output.txt
+
+# ─── Local PR automation (not for publication) ─────────────────────────────────
+scripts/create-15-meaningful-prs.sh
+scripts/build-feature-bundle.sh
 
 # ─── Database ─────────────────────────────────────────────────────────────────
 *.sqlite
