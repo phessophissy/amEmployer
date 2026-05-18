@@ -120,6 +120,9 @@ export class AmEmployerClient {
      */
     aiLogs: (id: string): Promise<SingleResponse<unknown[]>> =>
       this.get(`/api/jobs/${encodeURIComponent(id)}/ai-logs`),
+
+    stats: (id: string): Promise<SingleResponse<unknown>> =>
+      this.get(`/api/jobs/${encodeURIComponent(id)}/stats`),
   };
 
   // ─── Tasks ────────────────────────────────────────────────────────────────
@@ -156,6 +159,12 @@ export class AmEmployerClient {
      */
     listOpen: (): Promise<ListResponse<Task>> =>
       this.get('/api/tasks/open'),
+
+    highReward: (limit = 20): Promise<ListResponse<Task>> =>
+      this.get(`/api/tasks/high-reward?limit=${limit}`),
+
+    stats: (): Promise<SingleResponse<unknown>> =>
+      this.get('/api/tasks/stats'),
 
     /**
      * Submit work for a task.
@@ -202,6 +211,40 @@ export class AmEmployerClient {
      */
     leaderboard: (): Promise<ListResponse<Worker>> =>
       this.get('/api/workers/leaderboard'),
+
+    topEarners: (limit = 10): Promise<ListResponse<Worker>> =>
+      this.get(`/api/workers/top-earners?limit=${limit}`),
+
+    earnings: (address: string): Promise<SingleResponse<unknown>> =>
+      this.get(`/api/workers/${encodeURIComponent(address)}/earnings`),
+
+    search: (q: string): Promise<ListResponse<Worker>> =>
+      this.get(`/api/workers/search?q=${encodeURIComponent(q)}`),
+  };
+
+  readonly payments = {
+    list: (params?: { worker?: string; status?: string; limit?: number; offset?: number }): Promise<ListResponse<Payment>> => {
+      const qs = params
+        ? '?' +
+          new URLSearchParams(
+            Object.fromEntries(
+              Object.entries(params)
+                .filter(([, v]) => v !== undefined)
+                .map(([k, v]) => [k, String(v)]),
+            ),
+          ).toString()
+        : '';
+      return this.get(`/api/payments${qs}`);
+    },
+
+    get: (id: string): Promise<SingleResponse<Payment>> =>
+      this.get(`/api/payments/${encodeURIComponent(id)}`),
+
+    summary: (): Promise<SingleResponse<unknown>> =>
+      this.get('/api/payments/summary'),
+
+    daily: (days = 7): Promise<SingleResponse<unknown>> =>
+      this.get(`/api/payments/daily?days=${days}`),
   };
 
   // ─── Stats ────────────────────────────────────────────────────────────────
@@ -246,5 +289,14 @@ export class AmEmployerClient {
      */
     queueStats: (): Promise<SingleResponse<unknown>> =>
       this.get('/api/simulation/queues/stats'),
+
+    summary: (): Promise<SingleResponse<unknown>> =>
+      this.get('/api/simulation/summary'),
+
+    wallets: (id: string): Promise<SingleResponse<unknown>> =>
+      this.get(`/api/simulation/${encodeURIComponent(id)}/wallets`),
+
+    stop: (id: string): Promise<SingleResponse<unknown>> =>
+      this.post(`/api/simulation/${encodeURIComponent(id)}/stop`, {}),
   };
 }
