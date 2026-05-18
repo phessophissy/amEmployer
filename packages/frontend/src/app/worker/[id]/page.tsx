@@ -13,11 +13,23 @@ export default function WorkerProfilePage() {
   const [worker, setWorker] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    api.workers.list({ limit: '200' }).then(r => {
-      const found = (r.data || []).find((w: any) => w.id === id || w.walletAddress === id);
-      setWorker(found || null);
-      setLoading(false);
-    }).catch(() => setLoading(false));
+    const address = String(id);
+    Promise.all([
+      api.workers.get(address).catch(() => null),
+      api.workers.earnings(address).catch(() => null),
+    ])
+      .then(([workerRes, earningsRes]) => {
+        const profile = workerRes?.data;
+        if (profile) {
+          setWorker({ ...profile, earningsDetail: earningsRes?.data });
+        } else {
+          return api.workers.list({ limit: '200' }).then((r) => {
+            const found = (r.data || []).find((w: any) => w.id === id || w.walletAddress === id);
+            setWorker(found ? { ...found, earningsDetail: earningsRes?.data } : null);
+          });
+        }
+      })
+      .finally(() => setLoading(false));
   }, [id]);
   if (loading) return <div className="max-w-lg mx-auto px-4 py-6 space-y-4">{[...Array(3)].map((_, i) => <CardSkeleton key={i} />)}</div>;
   if (!worker) return <div className="max-w-lg mx-auto px-4 py-16 text-center text-slate-500">Worker not found</div>;

@@ -1,14 +1,39 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { useWalletContext } from '@/components/common/WalletProvider';
 import { SectionHeader } from '@/components/common/SectionHeader';
+import { EmployerSubNav } from '@/components/common/EmployerSubNav';
 import { ThemeSwitcher } from '@/components/common/ThemeSwitcher';
+
+const STORAGE_KEY = 'amemployer-employer-settings';
+
 export default function EmployerSettingsPage() {
   const { address } = useWalletContext();
   const [notifications, setNotifications] = useState(true);
   const [autoValidate, setAutoValidate] = useState(true);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (typeof parsed.notifications === 'boolean') setNotifications(parsed.notifications);
+      if (typeof parsed.autoValidate === 'boolean') setAutoValidate(parsed.autoValidate);
+    } catch {
+      /* ignore corrupt storage */
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ notifications, autoValidate }),
+    );
+  }, [notifications, autoValidate]);
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 space-y-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-lg mx-auto px-4 py-6 space-y-6">
+      <EmployerSubNav />
       <SectionHeader title="Settings" subtitle="Employer preferences and configuration" />
       <div className="bg-slate-900/50 border border-slate-700/30 rounded-xl p-5 space-y-4">
         <h3 className="text-sm font-semibold text-slate-300">Wallet</h3>
@@ -36,6 +61,6 @@ export default function EmployerSettingsPage() {
         <h3 className="text-sm font-semibold text-slate-300 mb-3">Theme</h3>
         <ThemeSwitcher />
       </div>
-    </div>
+    </motion.div>
   );
 }

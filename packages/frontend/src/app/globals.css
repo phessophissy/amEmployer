@@ -74,7 +74,7 @@ body {
   background-size: 100% 100%, 40px 40px, 40px 40px;
 }
 
-/* Radial vignette for mobile — hides grid at screen edges */
+/* Radial vignette for mobile  hides grid at screen edges */
 @media (max-width: 640px) {
   .cyber-bg::before {
     content: '';
@@ -105,7 +105,7 @@ body {
 
 /* Terminal cursor */
 .terminal-cursor::after {
-  content: '█';
+  content: '';
   animation: blink 1s step-end infinite;
   color: #00ff88;
 }
@@ -119,7 +119,7 @@ body {
 .status-paid { color: #00ff88; }
 
 
-/* ── Mobile / MiniPay safe-area & touch ─────────────────────────── */
+/*  Mobile / MiniPay safe-area & touch  */
 html {
   -webkit-overflow-scrolling: touch;
 }
@@ -153,7 +153,7 @@ button, a {
   border-radius: 6px;
 }
 
-/* Animated gradient border — wrap target in .grad-border wrapper */
+/* Animated gradient border  wrap target in .grad-border wrapper */
 @keyframes rotate-gradient {
   from { --grad-angle: 0deg; }
   to   { --grad-angle: 360deg; }
@@ -181,7 +181,7 @@ button, a {
   z-index: -1;
 }
 
-/* Card glow on hover — use alongside cyber-card */
+/* Card glow on hover  use alongside cyber-card */
 .hover-glow-green:hover {
   box-shadow: 0 0 24px rgba(16, 185, 129, 0.15), 0 0 48px rgba(16, 185, 129, 0.06);
 }
@@ -219,7 +219,7 @@ img.loaded { opacity: 1; }
 /* Prevent FOUC on theme change */
 html { color-scheme: dark; }
 
-/* ── Skeleton shimmer ────────────────────────────────────────────── */
+/*  Skeleton shimmer  */
 @keyframes shimmer {
   0%   { background-position: -400px 0; }
   100% { background-position:  400px 0; }
@@ -233,7 +233,7 @@ html { color-scheme: dark; }
   animation: shimmer 1.6s infinite linear;
 }
 
-/* ── Page fade-in ────────────────────────────────────────────────── */
+/*  Page fade-in  */
 @keyframes page-fade-in {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -242,7 +242,7 @@ html { color-scheme: dark; }
   animation: page-fade-in 0.25s ease-out both;
 }
 
-/* ── Neon pulse keyframe ─────────────────────────────────────────── */
+/*  Neon pulse keyframe  */
 @keyframes neon-pulse {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.55; }

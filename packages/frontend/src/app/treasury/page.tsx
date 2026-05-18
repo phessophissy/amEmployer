@@ -14,9 +14,12 @@ export default function TreasuryPage() {
 
   const load = async () => {
     try {
-      const [statsRes, workersRes] = await Promise.all([api.stats.platform(), api.workers.list({ limit: '20' })]);
+      const [statsRes, earnersRes] = await Promise.all([
+        api.stats.platform(),
+        api.workers.topEarners('10').catch(() => api.workers.list({ limit: '10' })),
+      ]);
       setStats(statsRes.data);
-      setWorkers(workersRes.data || []);
+      setWorkers(earnersRes.data || []);
     } finally {
       setLoading(false);
     }

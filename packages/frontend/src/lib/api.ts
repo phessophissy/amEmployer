@@ -14,8 +14,6 @@ async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json();
 }
 
-// ─── Jobs ─────────────────────────────────────────────────────────────────────
-
 export const api = {
   jobs: {
     list: (params?: Record<string, string>) => {
@@ -27,6 +25,7 @@ export const api = {
       apiFetch<any>('/api/jobs', { method: 'POST', body: JSON.stringify(data) }),
     launchDemo: () => apiFetch<any>('/api/jobs/demo/launch', { method: 'POST' }),
     aiLogs: (id: string) => apiFetch<any>(`/api/jobs/${id}/ai-logs`),
+    stats: (id: string) => apiFetch<any>(`/api/jobs/${id}/stats`),
   },
 
   tasks: {
@@ -38,6 +37,7 @@ export const api = {
     submit: (id: string, data: { submission: string; workerAddress: string }) =>
       apiFetch<any>(`/api/tasks/${id}/submit`, { method: 'POST', body: JSON.stringify(data) }),
     open: () => apiFetch<any>('/api/tasks/open'),
+    highReward: (limit = '20') => apiFetch<any>(`/api/tasks/high-reward?limit=${limit}`),
   },
 
   workers: {
@@ -49,6 +49,9 @@ export const api = {
     register: (data: { walletAddress: string; workerType?: string; personaName?: string }) =>
       apiFetch<any>('/api/workers/register', { method: 'POST', body: JSON.stringify(data) }),
     leaderboard: () => apiFetch<any>('/api/workers/leaderboard'),
+    topEarners: (limit = '10') => apiFetch<any>(`/api/workers/top-earners?limit=${limit}`),
+    earnings: (address: string) => apiFetch<any>(`/api/workers/${address}/earnings`),
+    search: (q: string) => apiFetch<any>(`/api/workers/search?q=${encodeURIComponent(q)}`),
   },
 
   simulation: {
@@ -57,10 +60,23 @@ export const api = {
     start: (data: { walletCount: number; name: string }) =>
       apiFetch<any>('/api/simulation/start', { method: 'POST', body: JSON.stringify(data) }),
     queueStats: () => apiFetch<any>('/api/simulation/queues/stats'),
+    summary: () => apiFetch<any>('/api/simulation/summary'),
+    wallets: (id: string) => apiFetch<any>(`/api/simulation/${id}/wallets`),
+    stop: (id: string) => apiFetch<any>(`/api/simulation/${id}/stop`, { method: 'POST' }),
   },
 
   stats: {
     platform: () => apiFetch<any>('/api/stats'),
     activity: () => apiFetch<any>('/api/stats/activity'),
+  },
+
+  payments: {
+    list: (params?: Record<string, string>) => {
+      const qs = params ? '?' + new URLSearchParams(params).toString() : '';
+      return apiFetch<any>(`/api/payments${qs}`);
+    },
+    get: (id: string) => apiFetch<any>(`/api/payments/${id}`),
+    summary: () => apiFetch<any>('/api/payments/summary'),
+    daily: (days = '7') => apiFetch<any>(`/api/payments/daily?days=${days}`),
   },
 };

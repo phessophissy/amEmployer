@@ -9,6 +9,8 @@ import { AIActivityLog } from '@/components/common/AIActivityLog';
 import { cn, shortenAddress, timeAgo } from '@/lib/utils';
 import { useWalletContext } from '@/components/common/WalletProvider';
 import { JobCard } from '@/components/employer/JobCard';
+import { JobSearchBar } from '@/components/employer/JobSearchBar';
+import { EmployerSubNav } from '@/components/common/EmployerSubNav';
 
 interface Job {
   id: string;
@@ -62,6 +64,7 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [jobQuery, setJobQuery] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
   const [createError, setCreateError] = useState('');
@@ -136,8 +139,15 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
     }
   };
 
+  const filteredJobs = jobs.filter((job) => {
+    if (!jobQuery.trim()) return true;
+    const q = jobQuery.toLowerCase();
+    return job.title.toLowerCase().includes(q) || String(job.description || '').toLowerCase().includes(q);
+  });
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-4 py-6">
+      <EmployerSubNav />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
         <div>
@@ -204,9 +214,14 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
         {/* Jobs list */}
         <div className="lg:col-span-2">
           <div className="bg-slate-900/50 border border-slate-700/30 rounded-xl overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-700/30">
-              <h2 className="font-semibold text-slate-200">My Jobs</h2>
-              <span className="text-xs font-mono text-slate-500">{jobs.length} job{jobs.length !== 1 ? 's' : ''}</span>
+            <div className="px-5 py-4 border-b border-slate-700/30 space-y-3">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold text-slate-200">My Jobs</h2>
+                <span className="text-xs font-mono text-slate-500">
+                  {filteredJobs.length} / {jobs.length} job{jobs.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+              <JobSearchBar value={jobQuery} onChange={setJobQuery} />
             </div>
             <div className="divide-y divide-slate-700/20">
               {loading && (
@@ -224,7 +239,7 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
                 </div>
               )}
               <div className="divide-y divide-slate-700/10">
-                {jobs.map((job, i) => (
+                {filteredJobs.map((job, i) => (
                   <JobCard key={job.id} {...job} index={i} />
                 ))}
               </div>
@@ -358,6 +373,6 @@ function EmployerDashboard({ walletAddress }: { walletAddress: string }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
