@@ -19,5 +19,5 @@ export function AnimatedCounter({
   className = '',
 }: AnimatedCounterProps) {
   const display = useCountUp(value, { duration, decimals, prefix, suffix });
-  return <span className={className}>{display}</span>;
+  return <span className={className || "font-mono text-emerald-400 text-xl font-bold"}>{display}</span>;
 }
