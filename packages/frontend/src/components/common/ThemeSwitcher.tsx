@@ -8,7 +8,7 @@ export function ThemeSwitcher() {
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button onClick={() => setOpen(o => !o)}
+      <button onClick={() => setOpen(o => !o)} aria-expanded={open}
         className="w-9 h-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition-all text-base"
         aria-label="Change theme"
         title="Change theme"
