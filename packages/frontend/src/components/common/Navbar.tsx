@@ -41,7 +41,7 @@ export function Navbar() {
             <span className="text-emerald-400 text-xs font-bold font-mono">aE</span>
           </div>
           <span className="font-bold text-white text-sm">
-            am<span className="text-emerald-400">Employer</span>
+            am<span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-300 to-cyan-300">Employer</span>
           </span>
           <span className="hidden sm:block px-2 py-0.5 text-xs font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded">
             CELO
