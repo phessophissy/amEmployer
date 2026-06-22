@@ -34,7 +34,7 @@ export default function HomePage() {
               Running in MiniPay
             </div>
           )}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-4">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-4 leading-tight">
             <span className="text-white">am</span>
             <GradientText className="text-4xl sm:text-6xl lg:text-7xl font-bold">Employer</GradientText>
           </h1>
