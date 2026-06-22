@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Skip link visible on focus for keyboard users */
+.skip-link {
+  position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;
+}
+.skip-link:focus, .skip-link:focus-visible {
+  left: 1rem; top: 1rem; width: auto; height: auto; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.06); border-radius: 6px; z-index: 60;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
