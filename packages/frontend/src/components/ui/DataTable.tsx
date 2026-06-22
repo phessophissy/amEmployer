@@ -14,7 +14,7 @@ export function DataTable<T extends Record<string, any>>({ columns, data, keyFie
     ? [...data].sort((a, b) => { const v = a[sortKey] < b[sortKey] ? -1 : a[sortKey] > b[sortKey] ? 1 : 0; return sortAsc ? v : -v; })
     : data;
   return (
-    <div className="overflow-x-auto rounded-xl border border-slate-700/30">
+    <div className="overflow-x-auto rounded-xl border border-slate-700/30 bg-slate-900/40 p-1 shadow-inner-glow">
       <table className="w-full text-sm">
         <thead className="bg-slate-900/80">
           <tr>
