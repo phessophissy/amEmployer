@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Navbar />
           <WrongNetworkBanner />
           <MobileNav />
-          <main className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>{children}</main>
+          <main className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}><PageTransition>{children}</PageTransition></main>
           <ToastContainer />
         </WalletProvider>
       </body>
