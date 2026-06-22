@@ -23,7 +23,7 @@ export function MobileNav() {
 
   return (
     <nav
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-emerald-500/10 bg-black/95 backdrop-blur-xl"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-emerald-500/10 bg-black/95 backdrop-blur-xl rounded-t-xl shadow-neon-sm"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       aria-label="Main navigation"
     >
