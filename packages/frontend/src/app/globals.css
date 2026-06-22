@@ -153,6 +153,12 @@ button, a {
   border-radius: 6px;
 }
 
+/* interactive helper for subtle motion */
+.interactive {
+  transition: transform 160ms cubic-bezier(0.4,0,0.2,1), box-shadow 200ms;
+}
+.interactive:active { transform: translateY(1px) scale(0.997); }
+
 /* Animated gradient border  wrap target in .grad-border wrapper */
 @keyframes rotate-gradient {
   from { --grad-angle: 0deg; }
