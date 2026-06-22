@@ -5,6 +5,7 @@ import { Navbar } from '@/components/common/Navbar';
 import { WalletProvider } from '@/components/common/WalletProvider';
 import { MobileNav } from '@/components/common/MobileNav';
 import { WrongNetworkBanner } from '@/components/common/WrongNetworkBanner';
+import { PageTransition } from '@/components/common/PageTransition';
 
 export const metadata: Metadata = {
   title: 'amEmployer — Autonomous AI Labor Platform on Celo',
@@ -26,11 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="dark">
       <body className="cyber-bg min-h-screen text-slate-100 antialiased">
+        <a href=\"#main\" className=\"sr-only focus:not-sr-only focus:block p-2 bg-white/5 rounded m-2\">Skip to content</a>
         <WalletProvider>
           <Navbar />
           <WrongNetworkBanner />
           <MobileNav />
-          <main className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>{children}</main>
+          <main id=\"main\" className="pt-14 lg:pb-0" style={{ paddingBottom: 'calc(4rem + env(safe-area-inset-bottom, 0px))' }}>{children}</main>
           <ToastContainer />
         </WalletProvider>
       </body>
