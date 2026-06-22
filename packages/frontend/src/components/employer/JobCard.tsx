@@ -46,7 +46,7 @@ export function JobCard({ title, description, status, totalBudget, taskCount, co
       whileTap={{ scale: 0.985 }}
       onClick={onClick}
       className={cn(
-        'group bg-slate-900/50 border border-slate-700/30 hover:border-slate-600/50 rounded-xl p-4 cursor-pointer transition-all duration-200 space-y-3',
+        'group bg-slate-900/50 border border-slate-700/30 hover:border-slate-600/50 rounded-xl p-4 cursor-pointer transition-all duration-200 hover:-translate-y-1 hover:shadow-neon-md space-y-3',
         status === 'ACTIVE' && 'hover-glow-green',
         status === 'PENDING' && 'hover-glow-cyan',
       )}
