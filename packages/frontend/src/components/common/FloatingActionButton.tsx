@@ -7,7 +7,7 @@ export function FloatingActionButton({ icon, label, onClick, color = 'bg-emerald
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
-      className={`fixed bottom-20 right-4 z-40 lg:bottom-6 flex items-center gap-2 px-4 py-3 ${color} text-white font-semibold rounded-full shadow-lg shadow-emerald-500/20 transition-colors`}
+      className={`fixed bottom-20 right-4 z-40 lg:bottom-6 flex items-center gap-2 px-4 py-3 ${color} text-white font-semibold rounded-2xl shadow-neon-md ring-1 ring-emerald-500/10 transition-colors backdrop-blur-sm`}
       aria-label={label}
     >
       <span className="text-base">{icon}</span>
