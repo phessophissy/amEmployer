@@ -211,6 +211,9 @@ button, a {
 /* Optimise long lists */
 .virtual-list { will-change: transform; }
 
+.btn {
+  @apply inline-flex items-center rounded-md px-4 py-2 bg-primary text-primary-foreground transition-all shadow-sm;
+}
 /* Smooth image loading */
 img { transition: opacity 0.2s ease; }
 img[loading="lazy"] { opacity: 0; }
