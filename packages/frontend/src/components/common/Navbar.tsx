@@ -35,7 +35,7 @@ export function Navbar() {
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-40 border-b border-emerald-500/10 bg-black/90 backdrop-blur-xl transition-shadow duration-200 ${scrolled ? 'shadow-[0_4px_24px_rgba(0,0,0,0.5)]' : ''}`}>
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between gap-2">
+      <div className="container mx-auto px-4 h-14 flex items-center justify-between gap-2">
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center">
             <span className="text-emerald-400 text-xs font-bold font-mono">aE</span>
