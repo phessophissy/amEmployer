@@ -22,7 +22,7 @@ export function NavSearchBar() {
 
   return (
     <div className="relative">
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs font-mono text-slate-500 w-36 hover:border-emerald-500/30 transition-all cursor-text"
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-xs font-mono text-slate-500 w-48 hover:border-emerald-500/30 transition-all cursor-text"
         onClick={() => setOpen(true)}>
         <span className="opacity-60">⌕</span>
         <input
@@ -30,7 +30,7 @@ export function NavSearchBar() {
           onChange={e => { setQuery(e.target.value); setOpen(true); }}
           onFocus={() => setOpen(true)}
           onBlur={() => setTimeout(() => setOpen(false), 200)}
-          placeholder="Search…"
+          placeholder="Search pages, jobs, workers…"
           className="bg-transparent outline-none w-full text-slate-300 placeholder-slate-600"
         />
       </div>
